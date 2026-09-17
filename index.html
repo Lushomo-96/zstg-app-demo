@@ -1,0 +1,3118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#006400">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ZSTG">
+<title>ZSTG — Zambia Standard Treatment Guidelines</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<style>
+/* ============================================================
+   ZSTG — Republic of Zambia, Ministry of Health
+   Design system: official document / gazette aesthetic
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* National palette (flag + MOH document tones) */
+  --green: #006400;        /* primary — MoH Dark Green */
+  --green-light: #2E8B2E;
+  --green-wash: rgba(0,100,0,0.08);
+  --red: #A6192E;          /* emergencies / alerts */
+  --red-wash: rgba(166,25,46,0.08);
+  --gold: #B5750A;         /* edition banner / warnings / paediatric */
+  --gold-wash: rgba(181,117,10,0.10);
+  --maroon: #6E2140;       /* obstetrics & gynaecology */
+  --ink: #1C1B18;
+  --ink-soft: #55524A;
+  --paper: #F6F4EE;        /* warm "paper" background, not flat grey */
+  --card-bg: #FFFFFF;
+  --line: #D9D3C2;         /* hairline rule, like a printed table border */
+  --line-strong: #B9B29B;
+  --white: #FFFFFF;
+  --shadow: 0 1px 2px rgba(28,27,24,0.06), 0 1px 8px rgba(28,27,24,0.04);
+  --radius: 6px; --radius-sm: 4px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --header-height: 60px;
+  --tsize-mult: 1; /* accessibility text-size multiplier, see [data-text-size] below */
+  --serif: Georgia, 'Times New Roman', 'Noto Serif', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+/* === DARK MODE ===
+   Same national palette, re-tuned for a dark canvas: greens/reds/golds are
+   lifted in lightness so they keep enough contrast on near-black, while the
+   "wash" backgrounds move to translucent overlays instead of flat tints. */
+html[data-theme="dark"] {
+  --green: #3FA968;
+  --green-light: #4CC17D;
+  --green-wash: rgba(63,169,104,0.16);
+  --red: #E5566E;
+  --red-wash: rgba(229,86,110,0.16);
+  --gold: #E0A542;
+  --gold-wash: rgba(224,165,66,0.16);
+  --maroon: #C1618E;
+  --ink: #F2F0EA;
+  --ink-soft: #B8B3A4;
+  --paper: #17160F;
+  --card-bg: #211F17;
+  --line: #3A3728;
+  --line-strong: #514D3A;
+  --white: #FFFFFF;
+  --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 1px 8px rgba(0,0,0,0.28);
+}
+html { transition: color-scheme 0.2s; color-scheme: light; }
+html[data-theme="dark"] { color-scheme: dark; }
+body, .app-header, .dash-card, .list-item, .search-result-item, .settings-item,
+.mgmt-step, .phase-group, .drug-option, .risk-table, .bottom-nav, .toast,
+.network-banner, .verification-warning, .red-flags-section {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--sans);
+  background: var(--paper); color: var(--ink); font-size: calc(16px * var(--tsize-mult)); line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    linear-gradient(var(--paper), var(--paper));
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 4px; }
+svg.icon { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.15em; }
+.nav-icon svg.icon { height: 20px; stroke-width: 2; width: 20px; }
+.card-icon svg.icon { height: 22px; stroke-width: 1.9; width: 22px; }
+
+/* === HEADER (masthead) === */
+.app-header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: var(--header-height); padding-top: var(--safe-top);
+  background: var(--green);
+  border-bottom: 3px solid var(--gold);
+  color: var(--white); display: flex; align-items: center; padding-left: 14px; padding-right: 14px;
+  gap: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.app-header .back-btn { background: none; border: none; color: var(--white); font-size: calc(22px * var(--tsize-mult)); line-height: 1; cursor: pointer; padding: 4px 6px; display: none; }
+.app-header .back-btn.visible { display: flex; }
+.app-header .seal { width: 34px; height: 34px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.15s ease; }
+.app-header .seal:active { transform: scale(0.9); }
+.app-header .seal img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25)); }
+.app-header .head-text { flex: 1; min-width: 0; }
+.app-header .theme-toggle {
+  background: none; border: none; color: var(--white); cursor: pointer; padding: 6px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; opacity: 0.92;
+  -webkit-tap-highlight-color: transparent;
+}
+.app-header .theme-toggle svg { width: 19px; height: 19px; }
+.app-header h1 { font-family: var(--serif); font-size: calc(17px * var(--tsize-mult)); font-weight: 700; letter-spacing: 0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.app-header .subtitle { font-size: calc(10.5px * var(--tsize-mult)); opacity: 0.88; text-transform: uppercase; letter-spacing: 0.6px; }
+
+/* === MAIN CONTENT === */
+.main-content {
+  position: fixed; top: calc(var(--header-height) + var(--safe-top)); left: 0; right: 0;
+  bottom: calc(58px + var(--safe-bottom)); overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* === BOTTOM NAV === */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  height: calc(58px + var(--safe-bottom)); padding-bottom: var(--safe-bottom);
+  background: var(--white); border-top: 1px solid var(--line);
+  display: flex; align-items: stretch; box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; background: none; border: none; border-top: 2px solid transparent; cursor: pointer; color: var(--ink-soft);
+  font-size: calc(10px * var(--tsize-mult)); font-weight: 600; letter-spacing: 0.2px; transition: color 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item .nav-icon { font-size: calc(20px * var(--tsize-mult)); line-height: 1; display:flex; align-items:center; justify-content:center; }
+.nav-item.active { color: var(--green); border-top-color: var(--gold); }
+
+/* === SCREENS === */
+.screen { display: none; padding: 0; }
+.screen.active { display: block; animation: fadeIn 0.22s ease; }
+.screen.active.enter-fwd { animation: slideInFwd 0.24s cubic-bezier(.3,.9,.4,1); }
+.screen.active.enter-back { animation: slideInBack 0.24s cubic-bezier(.3,.9,.4,1); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideInFwd { from { opacity: 0; transform: translateX(18px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideInBack { from { opacity: 0; transform: translateX(-18px); } to { opacity: 1; transform: translateX(0); } }
+
+/* === TAP RIPPLE FEEDBACK === */
+.dash-card, .list-item, .nav-item, .cross-ref, .search-result-item, .back-btn,
+.app-header .seal, .emergency-fab, .settings-item { position: relative; overflow: hidden; }
+.ripple {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  background: rgba(0,0,0,0.14); transform: scale(0);
+  animation: rippleAnim 0.55s ease-out;
+}
+.app-header .seal .ripple, .emergency-fab .ripple { background: rgba(255,255,255,0.35); }
+@keyframes rippleAnim { to { transform: scale(1.8); opacity: 0; } }
+
+/* === TOAST === */
+#toastHost { position: fixed; left: 0; right: 0; bottom: calc(78px + var(--safe-bottom)); z-index: 400; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.toast {
+  background: var(--ink); color: var(--white); font-size: calc(13px * var(--tsize-mult)); font-weight: 600;
+  padding: 10px 18px; border-radius: 20px; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  display: flex; align-items: center; gap: 8px; opacity: 0; transform: translateY(10px) scale(0.95);
+  animation: toastIn 0.25s ease forwards;
+  max-width: 88%; text-align: center;
+}
+.toast.toast-out { animation: toastOut 0.22s ease forwards; }
+@keyframes toastIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes toastOut { to { opacity: 0; transform: translateY(10px) scale(0.95); } }
+.toast .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+/* === SPLASH — title-page style === */
+#splash-screen {
+  position: fixed; inset: 0; z-index: 200;
+  background: var(--green);
+  background-image: radial-gradient(circle at 50% -10%, rgba(255,255,255,0.06), transparent 60%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--white); text-align: center; padding: 40px;
+}
+#splash-screen.hidden { display: none; }
+#splash-screen .seal-lg { width: 84px; height: auto; max-height: 96px; object-fit: contain; margin-bottom: 18px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3)); animation: sealPop 0.7s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes sealPop { from { opacity: 0; transform: scale(0.6) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+#splash-screen .republic { font-size: calc(12px * var(--tsize-mult)); letter-spacing: 2.5px; text-transform: uppercase; opacity: 0.92; }
+#splash-screen h1 { font-family: var(--serif); font-size: calc(21px * var(--tsize-mult)); font-weight: 700; letter-spacing: 0.5px; margin-top: 2px; }
+#splash-screen .rule { width: 56px; height: 2px; background: var(--gold); margin: 14px auto; }
+#splash-screen .doc-title { font-family: var(--serif); font-size: calc(24px * var(--tsize-mult)); font-weight: 700; line-height: 1.3; max-width: 300px; }
+#splash-screen .edition-banner {
+  margin-top: 12px; display: inline-block; padding: 4px 16px; background: var(--gold); color: var(--ink);
+  font-size: calc(12px * var(--tsize-mult)); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-radius: 2px;
+}
+#splash-screen .version { font-size: calc(11px * var(--tsize-mult)); opacity: 0.75; position: absolute; bottom: 68px; letter-spacing: 0.5px; }
+#splash-screen .dev-credit { font-size: calc(9.5px * var(--tsize-mult)); opacity: 0.6; position: absolute; bottom: 44px; letter-spacing: 0.3px; }
+#splash-screen .splash-disclaimer { font-size: calc(9.5px * var(--tsize-mult)); font-weight: 700; color: #F0C65A; opacity: 0.95; position: absolute; bottom: 20px; left: 24px; right: 24px; text-align: center; letter-spacing: 0.2px; }
+#splash-screen .loading-bar {
+  width: 180px; height: 2px; background: rgba(255,255,255,0.22); margin-top: 26px; overflow: hidden;
+}
+#splash-screen .loading-bar-inner {
+  height: 100%; width: 0%; background: var(--gold);
+  animation: load 1.5s ease forwards;
+}
+@keyframes load { to { width: 100%; } }
+
+/* === HOME === */
+.home-container { padding: 16px; }
+.home-hero { text-align: center; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.home-hero .hero-kicker { font-size: calc(10.5px * var(--tsize-mult)); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); }
+.home-hero h2 { font-family: var(--serif); font-size: calc(19px * var(--tsize-mult)); font-weight: 700; color: var(--green); margin-top: 4px; line-height: 1.3; }
+.home-hero .edition { font-size: calc(12px * var(--tsize-mult)); color: var(--ink-soft); margin-top: 3px; }
+.home-search-bar {
+  display: flex; align-items: center; background: var(--card-bg); border-radius: var(--radius);
+  padding: 0 14px; margin-bottom: 20px; border: 1px solid var(--line);
+  transition: border-color 0.2s; cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.home-search-bar:focus-within { border-color: var(--green); }
+.home-search-bar .search-icon { font-size: calc(17px * var(--tsize-mult)); margin-right: 10px; color: var(--ink-soft); display:flex; }
+.home-search-bar input {
+  flex: 1; border: none; background: none; padding: 13px 0; font-size: calc(15px * var(--tsize-mult)); outline: none; color: var(--ink); font-family: var(--sans);
+}
+.home-search-bar input::placeholder { color: #9A9585; }
+
+/* === DASHBOARD CARDS (document tiles) === */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.dash-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 18px 10px; background: var(--card-bg); border-radius: var(--radius-sm);
+  border: 1px solid var(--line); border-top: 3px solid var(--green);
+  box-shadow: var(--shadow); cursor: pointer; transition: transform 0.15s;
+  -webkit-tap-highlight-color: transparent; text-align: center;
+}
+.dash-card:active { transform: scale(0.97); }
+.dash-card .card-icon { font-size: calc(24px * var(--tsize-mult)); margin-bottom: 8px; color: var(--green); display:flex; }
+.dash-card .card-label { font-size: calc(12.5px * var(--tsize-mult)); font-weight: 700; color: var(--ink); letter-spacing: 0.1px; }
+.dash-card .card-count { font-size: calc(10.5px * var(--tsize-mult)); color: var(--ink-soft); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+.dash-card.card-emergency { border-top-color: var(--red); } .dash-card.card-emergency .card-icon { color: var(--red); }
+.dash-card.card-adult { border-top-color: var(--green); }
+.dash-card.card-paeds { border-top-color: var(--gold); } .dash-card.card-paeds .card-icon { color: var(--gold); }
+.dash-card.card-obgyn { border-top-color: var(--maroon); } .dash-card.card-obgyn .card-icon { color: var(--maroon); }
+
+/* === SEARCH === */
+.search-container { padding: 12px 16px; }
+.search-input-wrap {
+  display: flex; align-items: center; background: var(--card-bg); border-radius: var(--radius);
+  padding: 0 14px; border: 1px solid var(--line);
+  transition: border-color 0.2s; margin-bottom: 12px;
+}
+.search-input-wrap:focus-within { border-color: var(--green); }
+.search-input-wrap .si { font-size: calc(17px * var(--tsize-mult)); margin-right: 10px; color: var(--ink-soft); display:flex; }
+.search-input-wrap input {
+  flex: 1; border: none; background: none; padding: 13px 0; font-size: calc(15px * var(--tsize-mult)); outline: none; color: var(--ink); font-family: var(--sans);
+}
+.search-input-wrap .clear-btn { background: none; border: none; font-size: calc(16px * var(--tsize-mult)); color: #9A9585; cursor: pointer; padding: 4px; display: none; }
+.search-input-wrap .clear-btn.visible { display: block; }
+.search-results { padding: 0; }
+.search-result-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+  background: var(--card-bg); border-radius: var(--radius-sm); margin-bottom: 7px;
+  border: 1px solid var(--line);
+  cursor: pointer; transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.search-result-item:active { transform: scale(0.98); }
+.search-result-item .r-icon { font-size: calc(18px * var(--tsize-mult)); width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0; }
+.search-result-item .r-text { flex: 1; min-width: 0; }
+.search-result-item .r-title { font-size: calc(14.5px * var(--tsize-mult)); font-weight: 600; color: var(--ink); }
+.search-result-item .r-sub { font-size: calc(11.5px * var(--tsize-mult)); color: var(--ink-soft); margin-top: 1px; }
+.search-result-item .r-chevron { color: var(--line-strong); }
+
+/* === LIST SCREENS (Categories, Emergencies, Drugs) === */
+.list-container { padding: 12px 16px; }
+.list-item {
+  display: flex; align-items: center; gap: 12px; padding: 13px 14px;
+  background: var(--card-bg); border-radius: var(--radius-sm); margin-bottom: 7px;
+  border: 1px solid var(--line);
+  cursor: pointer; transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.list-item:active { transform: scale(0.98); }
+.list-item .li-icon { font-size: calc(17px * var(--tsize-mult)); width: 32px; text-align: center; color: var(--green); display:flex; align-items:center; justify-content:center; }
+.list-item .li-text { flex: 1; min-width: 0; }
+.list-item .li-title { font-size: calc(14.5px * var(--tsize-mult)); font-weight: 600; color: var(--ink); }
+.list-item .li-sub { font-size: calc(11.5px * var(--tsize-mult)); color: var(--ink-soft); margin-top: 1px; }
+.list-item .li-chevron { color: var(--line-strong); font-size: calc(17px * var(--tsize-mult)); }
+.list-item .li-count { font-size: calc(11px * var(--tsize-mult)); font-weight: 600; color: var(--ink-soft); background: var(--paper); border: 1px solid var(--line); padding: 2px 9px; border-radius: 10px; }
+
+/* === SECTION HEADER === */
+.section-header { display: flex; align-items: center; gap: 8px; padding: 16px 16px 8px; font-size: calc(11.5px * var(--tsize-mult)); font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.8px; }
+
+/* === DISEASE DETAIL (guideline-entry style) === */
+.detail-container { margin: 0 auto; max-width: 980px; padding: 24px clamp(16px, 4vw, 42px) 32px; }
+.detail-header { margin-bottom: 24px; padding-bottom: 18px; border-bottom: 1px solid var(--line-strong); }
+.detail-header .detail-code { font-size: calc(12px * var(--tsize-mult)); font-weight: 750; color: var(--green); text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--sans); }
+.detail-header .detail-title { font-family: var(--serif); font-size: clamp(calc(24px * var(--tsize-mult)), 4vw, calc(34px * var(--tsize-mult))); font-weight: 700; color: var(--ink); line-height: 1.16; margin-top: 6px; max-width: 22em; }
+.detail-header .detail-type { font-size: calc(13px * var(--tsize-mult)); font-weight: 650; color: var(--ink-soft); display: inline-block; margin-top: 9px; }
+
+/* Point-of-use provenance: prominent enough to trust, compact enough not to delay care. */
+.source-assurance {
+  background: var(--green-wash); border: 1px solid color-mix(in srgb, var(--green) 38%, var(--line));
+  border-left: 4px solid var(--green); border-radius: var(--radius-sm); margin: -7px 0 18px;
+  padding: 12px 14px;
+}
+.source-assurance.needs-review { background: var(--gold-wash); border-color: var(--gold); }
+.source-assurance-head { align-items: center; display: flex; gap: 10px; }
+.source-assurance-icon {
+  align-items: center; background: var(--green); border-radius: 50%; color: var(--white); display: flex;
+  flex: 0 0 28px; height: 28px; justify-content: center; width: 28px;
+}
+.source-assurance.needs-review .source-assurance-icon { background: var(--gold); }
+.source-assurance-icon svg { height: 16px; width: 16px; }
+.source-assurance-heading { color: var(--ink); font-size: calc(14px * var(--tsize-mult)); font-weight: 800; line-height: 1.25; }
+.source-assurance-status { color: var(--green); font-size: calc(12px * var(--tsize-mult)); font-weight: 700; margin-top: 2px; }
+.source-assurance.needs-review .source-assurance-status { color: #765000; }
+.source-assurance-summary { color: var(--ink); font-size: calc(13px * var(--tsize-mult)); line-height: 1.55; margin: 9px 0 0 38px; }
+.source-assurance-facts { display: flex; flex-wrap: wrap; gap: 6px; margin: 9px 0 0 38px; }
+.source-assurance-fact { background: color-mix(in srgb, var(--card-bg) 72%, transparent); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); font-size: calc(11.5px * var(--tsize-mult)); font-weight: 700; padding: 4px 9px; }
+.source-assurance-note { color: var(--ink-soft); font-size: calc(11.5px * var(--tsize-mult)); line-height: 1.45; margin: 9px 0 0 38px; }
+.source-assurance.compact { margin-top: -7px; }
+
+/* Verification / notice boxes — formal bordered notes, not colourful pills */
+.verification-warning {
+  background: var(--gold-wash); border: 1px solid var(--gold); border-left: 4px solid var(--gold); border-radius: var(--radius-sm);
+  padding: 12px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-start;
+}
+.verification-warning .vw-icon { flex-shrink: 0; color: var(--gold); margin-top: 1px; }
+.verification-warning .vw-text { font-size: calc(12.5px * var(--tsize-mult)); color: #6B4700; line-height: 1.6; }
+.verification-warning .vw-text strong { color: var(--ink); }
+
+.app-disclaimer {
+  background: var(--red-wash); border: 1px solid var(--red); border-left: 4px solid var(--red); border-radius: var(--radius-sm);
+  padding: 12px 14px; margin: 0 0 14px; display: flex; gap: 10px; align-items: flex-start;
+}
+.app-disclaimer .ad-icon { flex-shrink: 0; color: var(--red); margin-top: 1px; }
+.app-disclaimer .ad-text { font-size: calc(12.5px * var(--tsize-mult)); color: var(--ink); line-height: 1.6; }
+.app-disclaimer .ad-text strong { color: var(--red); }
+
+/* Red flags section */
+.red-flags-section {
+  background: var(--red-wash); border: 1px solid var(--red); border-left: 4px solid var(--red); border-radius: var(--radius-sm);
+  padding: 12px 14px; margin-bottom: 16px;
+}
+.red-flags-section .rf-title { font-size: calc(12px * var(--tsize-mult)); font-weight: 700; color: var(--red); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+.red-flags-section .rf-item { font-size: calc(13px * var(--tsize-mult)); padding: 4px 0; padding-left: 18px; position: relative; color: #6B0F1E; line-height: 1.5; }
+.red-flags-section .rf-item::before { content: '—'; position: absolute; left: 0; color: var(--red); font-weight: bold; }
+
+/* Content sections */
+.detail-section { margin-bottom: 20px; }
+.detail-section h3 {
+  font-family: var(--serif); font-size: calc(14.5px * var(--tsize-mult)); font-weight: 700; color: var(--green);
+  letter-spacing: 0.2px; margin-bottom: 9px; padding-bottom: 5px; border-bottom: 1px solid var(--green);
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.detail-section h3 .sec-chevron { transition: transform 0.2s ease; color: var(--green); flex-shrink: 0; transform: rotate(90deg); }
+.detail-section h3 .sec-chevron svg { width: 16px; height: 16px; }
+.detail-section.collapsed h3 .sec-chevron { transform: rotate(0deg); }
+.detail-section .sec-body { overflow: hidden; }
+.detail-section.collapsed .sec-body { display: none; }
+.detail-section p, .detail-section li { font-size: calc(16px * var(--tsize-mult)); line-height: 1.68; color: var(--ink); }
+.detail-section ul { list-style: none; padding: 0; }
+.detail-section ul li { padding: 4px 0; padding-left: 18px; position: relative; }
+.detail-section ul li::before { content: '•'; position: absolute; left: 4px; color: var(--green); font-weight: bold; }
+
+/* Management steps */
+.mgmt-step {
+  background: var(--card-bg); border-radius: var(--radius-sm); padding: 11px 14px;
+  margin-bottom: 7px; border: 1px solid var(--line); border-left: 3px solid var(--green);
+}
+.mgmt-step .step-order { font-size: calc(10.5px * var(--tsize-mult)); color: var(--ink-soft); font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; }
+.mgmt-step .step-action { font-size: calc(14px * var(--tsize-mult)); font-weight: 500; margin-top: 2px; color: var(--ink); }
+.mgmt-step .step-dose { font-size: calc(13px * var(--tsize-mult)); color: var(--green); font-weight: 700; margin-top: 4px; }
+.mgmt-step .step-notes { font-size: calc(12px * var(--tsize-mult)); color: var(--ink-soft); margin-top: 4px; font-style: italic; }
+
+/* Drug options within step */
+.drug-options { margin-top: 8px; }
+.drug-option {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 7px 11px; margin-bottom: 4px; font-size: calc(13px * var(--tsize-mult));
+}
+.drug-option .do-name { font-weight: 700; color: var(--green); }
+.drug-option .do-dose { color: var(--ink); }
+
+/* Phase groups (for management_phases) */
+.phase-group { margin-bottom: 16px; border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; }
+.phase-group .phase-title {
+  font-size: calc(13px * var(--tsize-mult)); font-weight: 700; color: var(--white); background: var(--green);
+  padding: 8px 12px; margin-bottom: 0; letter-spacing: 0.2px;
+}
+.phase-group .phase-step {
+  background: var(--card-bg); padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: calc(14px * var(--tsize-mult)); color: var(--ink);
+}
+.phase-group .phase-step:last-child { border-bottom: none; }
+
+/* Algorithm (flowchart) */
+.algorithm-flow { padding: 16px 0; }
+.algo-node {
+  padding: 10px 16px; border-radius: var(--radius-sm); margin-bottom: 8px;
+  font-size: calc(13px * var(--tsize-mult)); position: relative; text-align: center; border: 1px solid var(--line);
+}
+.algo-node.action { background: var(--green-wash); border-color: var(--green); }
+.algo-node.decision { background: var(--gold-wash); border-color: var(--gold); }
+.algo-node .algo-arrow { display: block; margin: 4px auto 0; font-size: calc(15px * var(--tsize-mult)); color: var(--ink-soft); }
+
+/* Risk scoring tables — ruled like a printed guideline table */
+.risk-table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: calc(12.5px * var(--tsize-mult)); border: 1px solid var(--ink); }
+.risk-table th { background: var(--green); color: var(--white); padding: 8px 10px; text-align: left; font-weight: 700; border: 1px solid var(--green); }
+.risk-table td { padding: 7px 10px; border: 1px solid var(--line); }
+.risk-table tr:nth-child(even) td { background: var(--paper); }
+
+/* Audited clinical content: designed for scanning under time pressure. */
+.audited-content { counter-reset: source-page; }
+.audited-page { border-left: 2px solid var(--line); margin: 0 0 30px 4px; padding: 0 0 2px clamp(14px, 2.5vw, 24px); }
+.audited-page-label { align-items: center; display: flex; margin: 0 0 12px -7px; }
+.audited-page-label span { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); font-size: calc(12px * var(--tsize-mult)); font-weight: 700; letter-spacing: .02em; padding: 4px 10px; }
+.source-block { color: var(--ink); font-size: calc(16px * var(--tsize-mult)); line-height: 1.68; margin: 13px 0; }
+.source-block p { max-width: 72ch; }
+.source-block h3, .source-block h4 { color: var(--green); font-family: var(--serif); line-height: 1.28; margin: 26px 0 10px; }
+.source-block h3 { border-bottom: 1px solid var(--line); font-size: calc(20px * var(--tsize-mult)); padding-bottom: 7px; }
+.source-block h4 { font-size: calc(17px * var(--tsize-mult)); }
+.audited-group > .source-block:first-child > h3 {
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+.audited-group > .source-block:first-child > h3 .sec-chevron { transition: transform 0.2s ease; color: var(--green); flex-shrink: 0; transform: rotate(90deg); }
+.audited-group > .source-block:first-child > h3 .sec-chevron svg { width: 16px; height: 16px; }
+.audited-group.collapsed > .source-block:first-child > h3 .sec-chevron { transform: rotate(0deg); }
+.audited-group.collapsed > .source-block:first-child > h3 { border-bottom-color: var(--line); }
+.audited-group-body { overflow: hidden; }
+.audited-group.collapsed .audited-group-body { display: none; }
+.source-block ul, .source-block ol { margin: 8px 0; padding-left: 25px; }
+.source-block li { margin: 7px 0; padding-left: 3px; }
+.source-callout { background: var(--gold-wash); border-left: 4px solid var(--gold); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 16px; }
+.source-warning { background: var(--red-wash); border-left: 4px solid var(--red); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 16px; }
+.source-formula { background: var(--green-wash); border: 1px solid color-mix(in srgb, var(--green) 45%, var(--line)); border-radius: var(--radius); font-family: var(--serif); font-size: calc(17px * var(--tsize-mult)); font-weight: 700; padding: 16px; text-align: center; }
+.source-table-wrap { background: var(--card-bg); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); margin: 20px 0 24px; max-height: min(68vh, 720px); overflow: auto; -webkit-overflow-scrolling: touch; }
+.source-table { border-collapse: separate; border-spacing: 0; font-size: calc(14px * var(--tsize-mult)); line-height: 1.45; min-width: 620px; width: 100%; }
+.source-table caption { background: var(--card-bg); border-bottom: 1px solid var(--line); color: var(--ink); font-family: var(--serif); font-size: calc(18px * var(--tsize-mult)); font-weight: 700; padding: 16px 18px 13px; text-align: left; }
+.source-table th { background: var(--green); color: var(--white); font-size: calc(13px * var(--tsize-mult)); font-weight: 750; padding: 11px 12px; position: sticky; text-align: left; top: 0; vertical-align: top; z-index: 2; }
+.source-table td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 12px; vertical-align: top; }
+.source-table th:last-child, .source-table td:last-child { border-right: 0; }
+.source-table tbody tr:last-child td { border-bottom: 0; }
+.source-table tr:nth-child(even) td { background: color-mix(in srgb, var(--paper) 65%, var(--card-bg)); }
+.source-table td ul, .source-table td ol { margin: 0; padding-left: 18px; }
+.source-table td li { margin: 3px 0; }
+.source-figure { background: var(--card-bg); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); margin: 22px 0; padding: clamp(12px, 2vw, 20px); }
+.source-figure img { display: block; height: auto; margin: 0 auto 12px; max-height: 75vh; max-width: 100%; object-fit: contain; }
+.source-figure figcaption { color: var(--ink-soft); font-size: calc(13px * var(--tsize-mult)); line-height: 1.55; margin-top: 8px; }
+.source-kv { margin: 7px 0; }
+.source-kv-label { color: var(--ink); font-weight: 750; text-transform: capitalize; }
+.subsection-heading { align-items: baseline; border-bottom: 1px solid var(--line-strong); display: flex; gap: 10px; justify-content: space-between; margin: 22px 2px 9px; padding: 0 2px 8px; }
+.subsection-heading:first-of-type { margin-top: 8px; }
+.subsection-heading .sub-name { color: var(--green); font-family: var(--serif); font-size: calc(17px * var(--tsize-mult)); font-weight: 700; }
+.subsection-heading .sub-meta { color: var(--ink-soft); font-size: calc(12px * var(--tsize-mult)); white-space: nowrap; }
+
+/* Sticky topic navigation: a compact map of the current clinical entry. */
+.topic-nav {
+  backdrop-filter: blur(12px); background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+  border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 5px 18px rgba(0, 45, 20, .09);
+  margin: 0 0 22px; overflow: hidden; position: sticky; top: 0; z-index: 24;
+}
+.topic-nav-toggle {
+  align-items: center; background: transparent; border: 0; color: var(--ink); cursor: pointer;
+  display: grid; font-family: var(--sans); grid-template-columns: auto minmax(0, 1fr) auto auto;
+  min-height: 46px; padding: 9px 12px; text-align: left; width: 100%;
+}
+.topic-nav-title { color: var(--green); font-size: calc(12px * var(--tsize-mult)); font-weight: 800; letter-spacing: .02em; margin-right: 10px; text-transform: uppercase; }
+.topic-nav-current { font-size: calc(13px * var(--tsize-mult)); font-weight: 650; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topic-nav-count { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); font-size: calc(11px * var(--tsize-mult)); font-weight: 750; margin-left: 10px; padding: 3px 8px; white-space: nowrap; }
+.topic-nav-chevron { color: var(--green); display: flex; margin-left: 7px; transform: rotate(90deg); transition: transform .18s ease; }
+.topic-nav-chevron svg { height: 16px; width: 16px; }
+.topic-nav.is-collapsed .topic-nav-chevron { transform: rotate(0); }
+.topic-nav-links { border-top: 1px solid var(--line); display: flex; gap: 7px; overflow-x: auto; padding: 9px 11px 11px; scrollbar-width: thin; }
+.topic-nav.is-collapsed .topic-nav-links { display: none; }
+.topic-nav-link {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft);
+  cursor: pointer; flex: 0 0 auto; font: 700 calc(12px * var(--tsize-mult))/1.25 var(--sans);
+  max-width: min(300px, 72vw); min-height: 34px; overflow: hidden; padding: 7px 12px;
+  text-overflow: ellipsis; transition: background .15s, border-color .15s, color .15s; white-space: nowrap;
+}
+.topic-nav-link:hover { border-color: var(--green); color: var(--green); }
+.topic-nav-link.active { background: var(--green); border-color: var(--green); color: var(--white); }
+.source-block h3[id^="topic-section-"], .detail-section > h3[id^="topic-section-"] { scroll-margin-top: 112px; }
+
+@media (max-width: 720px) {
+  .detail-container { padding: 18px 14px 28px; }
+  .detail-header { margin-bottom: 18px; }
+  .source-assurance { margin-top: -4px; padding: 11px 12px; }
+  .source-assurance-summary, .source-assurance-facts, .source-assurance-note { margin-left: 0; }
+  .source-assurance-facts { gap: 5px; }
+  .topic-nav { border-radius: 8px; margin-bottom: 18px; }
+  .topic-nav-title { font-size: calc(11px * var(--tsize-mult)); }
+  .topic-nav-current { font-size: calc(12.5px * var(--tsize-mult)); }
+  .topic-nav-count { display: none; }
+  .topic-nav-links { display: grid; gap: 6px; max-height: min(54vh, 420px); overflow-y: auto; padding: 8px; }
+  .topic-nav-link { border-radius: 7px; max-width: none; min-height: 40px; text-align: left; white-space: normal; width: 100%; }
+  .audited-page { border-left: 0; margin-bottom: 26px; padding-left: 0; }
+  .audited-page-label { margin-left: 0; }
+  .source-block { font-size: calc(16px * var(--tsize-mult)); }
+  .source-block h3 { font-size: calc(19px * var(--tsize-mult)); }
+  .source-table-wrap { background: transparent; border: 0; border-radius: 0; box-shadow: none; max-height: none; overflow: visible; }
+  .source-table { border: 0; min-width: 0; }
+  .source-table caption { background: transparent; border-bottom: 2px solid var(--green); padding: 0 0 10px; }
+  .source-table thead { display: none; }
+  .source-table tbody, .source-table tr, .source-table td { display: block; width: 100%; }
+  .source-table tr { background: var(--card-bg); border: 1px solid var(--line); border-radius: 9px; box-shadow: var(--shadow); margin: 12px 0; overflow: hidden; }
+  .source-table td, .source-table tr:nth-child(even) td { align-items: start; background: var(--card-bg); border: 0; border-bottom: 1px solid var(--line); display: grid; gap: 12px; grid-template-columns: minmax(100px, 36%) 1fr; padding: 11px 12px; }
+  .source-table td:last-child { border-bottom: 0; }
+  .source-table td::before { color: var(--green); content: attr(data-label); font-size: calc(12px * var(--tsize-mult)); font-weight: 800; line-height: 1.35; }
+  .source-table td:empty { display: none; }
+}
+
+/* Cross references */
+.cross-refs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.cross-ref {
+  background: var(--white); color: var(--green); padding: 6px 14px; border-radius: 14px;
+  font-size: calc(12.5px * var(--tsize-mult)); font-weight: 600; cursor: pointer; transition: background 0.2s; border: 1px solid var(--green);
+  -webkit-tap-highlight-color: transparent;
+}
+.cross-ref:active { background: var(--green-wash); }
+.data-ref-link {
+  display: inline-flex; align-items: center; background: var(--green-wash); color: var(--green);
+  border: 1px solid var(--green); border-radius: 10px; padding: 0 7px; margin: 0 1px;
+  font: inherit; font-size: 0.92em; font-weight: 600; line-height: 1.6; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.data-ref-link:active { background: var(--green); color: var(--white); }
+.pulse-fx { animation: pulseFx 0.38s ease; }
+@keyframes pulseFx { 0% { transform: scale(1); } 40% { transform: scale(1.18); } 100% { transform: scale(1); } }
+
+/* === DRUG DETAIL === */
+.drug-guide-summary { color: var(--ink-soft); font-size: calc(13px * var(--tsize-mult)); line-height: 1.55; margin: -2px 2px 12px; }
+.drug-filter-row { display: flex; gap: 7px; margin: 0 0 14px; overflow-x: auto; padding: 1px 1px 4px; scrollbar-width: none; }
+.drug-filter-row::-webkit-scrollbar { display: none; }
+.drug-filter-chip { background: var(--card-bg); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); cursor: pointer; flex: 0 0 auto; font: 700 calc(12px * var(--tsize-mult))/1 var(--sans); min-height: 36px; padding: 0 13px; }
+.drug-filter-chip.active { background: var(--green); border-color: var(--green); color: var(--white); }
+.drug-category-label { border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); display: inline-block; font-size: calc(11px * var(--tsize-mult)); font-weight: 700; margin-top: 4px; padding: 2px 8px; }
+.drug-source-note { background: var(--green-wash); border-left: 4px solid var(--green); border-radius: 0 var(--radius) var(--radius) 0; color: var(--ink); font-size: calc(14px * var(--tsize-mult)); line-height: 1.6; margin: 0 0 22px; padding: 13px 15px; }
+.drug-aliases { color: var(--ink-soft); font-size: calc(13px * var(--tsize-mult)); margin-top: 8px; }
+.drug-condition-group { margin: 0 0 22px; }
+.drug-condition-heading { align-items: center; display: flex; gap: 10px; margin-bottom: 8px; }
+.drug-condition-heading h3 { color: var(--ink); flex: 1; font-family: var(--serif); font-size: calc(18px * var(--tsize-mult)); line-height: 1.3; }
+.drug-condition-heading .mention-count { background: var(--paper); border: 1px solid var(--line); border-radius: 999px; color: var(--ink-soft); font-size: calc(11px * var(--tsize-mult)); font-weight: 700; padding: 3px 8px; }
+.drug-mention-card { background: var(--card-bg); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); cursor: pointer; margin: 8px 0; padding: 13px 14px; transition: border-color .15s, transform .15s; }
+.drug-mention-card:hover { border-color: var(--green); }
+.drug-mention-card:active { transform: scale(.99); }
+.drug-mention-meta { align-items: center; color: var(--green); display: flex; font-size: calc(12px * var(--tsize-mult)); font-weight: 750; gap: 6px; margin-bottom: 7px; }
+.drug-mention-context { color: var(--ink); font-size: calc(15px * var(--tsize-mult)); line-height: 1.58; white-space: pre-line; }
+.drug-mention-link { color: var(--ink-soft); font-size: calc(12px * var(--tsize-mult)); font-weight: 650; margin-top: 8px; }
+.drug-conditions { margin-top: 12px; }
+
+/* === BOOKMARKS === */
+.bookmark-empty { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+.bookmark-empty .be-icon { font-size: calc(40px * var(--tsize-mult)); margin-bottom: 12px; color: var(--line-strong); display:flex; justify-content:center; }
+.bookmark-empty .be-text { font-size: calc(14.5px * var(--tsize-mult)); line-height: 1.6; }
+
+/* === SETTINGS === */
+.settings-item {
+  display: flex; align-items: center; justify-content: space-between; padding: 13px 14px;
+  background: var(--card-bg); border-bottom: 1px solid var(--line); cursor: pointer;
+}
+.settings-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
+.settings-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
+.settings-item .si-label { font-size: calc(13.5px * var(--tsize-mult)); color: var(--ink); }
+.settings-item .si-value { font-size: calc(12.5px * var(--tsize-mult)); color: var(--ink-soft); }
+
+/* === SEARCH HISTORY === */
+.history-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 14px; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.history-item:active { background: var(--card-bg); }
+.history-item .hi-icon { color: var(--ink-soft); display:flex; }
+.history-item .hi-text { font-size: calc(13.5px * var(--tsize-mult)); color: var(--ink); }
+
+/* Official notice strip used at the base of detail pages */
+.gazette-footer { font-size: calc(10.5px * var(--tsize-mult)); color: var(--ink-soft); padding: 10px 0 18px; border-top: 1px solid var(--line); line-height: 1.7; }
+
+/* === RESPONSIVE === */
+@media (min-width: 768px) {
+  .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
+  .main-content { max-width: 800px; margin: 0 auto; }
+}
+
+/* === ACCESSIBILITY: TEXT SIZE SCALING ===
+   Every font-size declaration in this stylesheet (and matching inline styles
+   generated in JS) is written as calc(Npx * var(--tsize-mult)) so that changing
+   this one multiplier scales the entire app consistently — headers, list items,
+   search results, detail content, settings, everything. */
+html[data-text-size="sm"] { --tsize-mult: 0.9375; }  /* ~15/16 */
+html[data-text-size="md"] { --tsize-mult: 1; }
+html[data-text-size="lg"] { --tsize-mult: 1.1875; }  /* ~19/16, clearly noticeable */
+html[data-text-size="lg"] .detail-section p, html[data-text-size="lg"] .detail-section li { line-height: 1.8; }
+.text-size-control { display: flex; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
+.text-size-control button {
+  flex: 1; border: none; background: none; padding: 8px 4px; font-size: calc(12.5px * var(--tsize-mult)); font-weight: 700; color: var(--ink-soft);
+  border-radius: 6px; cursor: pointer; transition: background 0.15s, color 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.text-size-control button.active { background: var(--green); color: var(--white); }
+
+/* === EMERGENCY QUICK-ACCESS FAB === */
+.emergency-fab {
+  position: fixed; right: 16px; bottom: calc(58px + var(--safe-bottom) + 16px); z-index: 90;
+  width: 54px; height: 54px; border-radius: 50%; background: var(--red); color: var(--white);
+  border: 2px solid rgba(255,255,255,0.85); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 3px 10px rgba(166,25,46,0.45), 0 1px 3px rgba(0,0,0,0.2); cursor: pointer;
+  -webkit-tap-highlight-color: transparent; transition: transform 0.15s, opacity 0.2s, visibility 0.2s;
+  opacity: 1; visibility: visible;
+}
+.emergency-fab svg { width: 24px; height: 24px; }
+.emergency-fab:active { transform: scale(0.92); }
+.emergency-fab.fab-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+.emergency-fab .fab-ring {
+  position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--red); opacity: 0;
+  animation: fabPulse 2.2s ease-out infinite;
+}
+@keyframes fabPulse { 0% { opacity: 0.55; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .emergency-fab .fab-ring { animation: none; display: none; } }
+
+/* === UTILITY FAB STACK (Back to Top / Share / Print) — shown only on detail pages === */
+.utility-fabs {
+  position: fixed; left: 16px; bottom: calc(58px + var(--safe-bottom) + 16px); z-index: 90;
+  display: flex; flex-direction: column-reverse; gap: 10px;
+  opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s, visibility 0.2s;
+}
+.utility-fabs.visible { opacity: 1; visibility: visible; pointer-events: auto; }
+.utility-fab {
+  width: 42px; height: 42px; border-radius: 50%; background: var(--card-bg); color: var(--green);
+  border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: transform 0.15s;
+}
+.utility-fab:active { transform: scale(0.9); }
+.utility-fab svg { width: 18px; height: 18px; }
+.utility-fab.back-to-top { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s, visibility 0.2s, transform 0.15s; }
+.utility-fab.back-to-top.show-btt { opacity: 1; visibility: visible; pointer-events: auto; }
+@media print {
+  .app-header, .bottom-nav, .emergency-fab, .utility-fabs, .network-banner, .action-banner, #splash-screen, #toastHost { display: none !important; }
+  .main-content { position: static !important; overflow: visible !important; }
+  body { background: #fff !important; color: #000 !important; }
+}
+
+/* === CREDITS FOOTER (Settings > About) === */
+footer {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  gap: 8px; padding: 22px 20px calc(20px + var(--safe-bottom));
+  border-top: 1px solid var(--line); margin-top: 8px;
+}
+footer .coat { width: 56px; height: 56px; object-fit: contain; border-radius: 10px; }
+footer p { font-size: calc(11.5px * var(--tsize-mult)); color: var(--ink-soft); line-height: 1.6; }
+
+/* === KEYBOARD FOCUS (accessibility) === */
+.list-item:focus-visible, .search-result-item:focus-visible, .history-item:focus-visible,
+.drug-condition-item:focus-visible, .dash-card:focus-visible, .nav-item:focus-visible,
+.cross-ref:focus-visible, button:focus-visible, input:focus-visible, .settings-item:focus-visible {
+  outline: 2px solid var(--gold); outline-offset: 2px;
+}
+
+/* === SEARCH CLEAR BUTTON (wired) === */
+.search-input-wrap .clear-btn, .home-search-bar .clear-btn { display: none; }
+.search-input-wrap .clear-btn.visible, .home-search-bar .clear-btn.visible { display: flex; align-items: center; justify-content: center; }
+
+/* === STICKY SECTION HEADERS (orientation while scrolling long lists) === */
+.list-container .section-header, .search-results .section-header {
+  position: sticky; top: 0; z-index: 5; background: var(--paper);
+  margin: 0 -16px 8px; padding: 12px 16px 8px; border-bottom: 1px solid var(--line);
+}
+
+/* === EMPTY / NO-RESULTS STATE === */
+.empty-state { text-align: center; padding: 48px 24px; color: var(--ink-soft); }
+.empty-state .es-icon { font-size: calc(32px * var(--tsize-mult)); margin-bottom: 10px; color: var(--line-strong); display: flex; justify-content: center; }
+.empty-state .es-text { font-size: calc(14px * var(--tsize-mult)); line-height: 1.6; }
+
+/* === SPLASH FADE (no more abrupt jump-cut) === */
+#splash-screen { transition: opacity 0.35s ease; opacity: 1; }
+#splash-screen.hidden { opacity: 0; pointer-events: none; display: flex; }
+#splash-screen.hidden-done { display: none; }
+
+/* === SCREEN TRANSITION (respects reduced motion) === */
+.screen.active { animation: fadeIn 0.22s ease; }
+@media (prefers-reduced-motion: reduce) { .screen.active { animation: none; } }
+
+/* === OFFLINE / NETWORK STATUS BANNER === */
+.network-banner {
+  position: fixed; top: calc(var(--header-height) + var(--safe-top)); left: 0; right: 0; z-index: 95;
+  background: var(--ink); color: var(--white); font-size: calc(12px * var(--tsize-mult)); font-weight: 600; text-align: center;
+  padding: 6px 10px; transform: translateY(-100%); transition: transform 0.25s ease;
+}
+.network-banner.visible { transform: translateY(0); }
+
+/* === INSTALL APP / UPDATE AVAILABLE BANNERS ===
+   Same slide-down slot as the offline banner, stacked below it if both are
+   ever visible together. Actionable (tap to install / tap to refresh),
+   dismissible, and never block the content underneath. */
+.action-banner {
+  position: fixed; left: 10px; right: 10px; z-index: 96;
+  border-radius: 12px; box-shadow: var(--shadow);
+  display: flex; align-items: center; gap: 10px; padding: 11px 12px;
+  font-size: calc(12.5px * var(--tsize-mult));
+  transform: translateY(-140%); opacity: 0; transition: transform 0.28s ease, opacity 0.28s ease;
+  pointer-events: none;
+}
+.action-banner.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
+#updateBanner { top: calc(var(--header-height) + var(--safe-top) + 8px); background: var(--gold); color: #3D2B00; }
+.action-banner .ab-icon { flex-shrink: 0; display: flex; }
+.action-banner .ab-icon svg { width: 18px; height: 18px; }
+.action-banner .ab-text { flex: 1; line-height: 1.35; }
+.action-banner .ab-btn {
+  flex-shrink: 0; border: 1px solid currentColor; background: rgba(255,255,255,0.18); color: inherit;
+  font-weight: 700; font-size: calc(11.5px * var(--tsize-mult)); padding: 6px 12px; border-radius: 8px; cursor: pointer;
+}
+.action-banner .ab-dismiss {
+  flex-shrink: 0; background: none; border: none; color: inherit; opacity: 0.75; cursor: pointer; padding: 4px;
+  display: flex; align-items: center; justify-content: center;
+}
+.action-banner .ab-dismiss svg { width: 15px; height: 15px; }
+
+/* === UI POLISH: calm clinical workstation === */
+:root {
+  --radius: 10px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(28,27,24,.05), 0 7px 22px rgba(28,27,24,.055);
+}
+html[data-theme="dark"] { --shadow: 0 1px 2px rgba(0,0,0,.34), 0 8px 24px rgba(0,0,0,.22); }
+button, [role="button"], input { touch-action: manipulation; }
+.main-content { scroll-behavior: smooth; }
+
+.app-header { box-shadow: 0 3px 14px rgba(0,45,20,.2); padding-left: clamp(12px, 3vw, 24px); padding-right: clamp(12px, 3vw, 24px); }
+.app-header .back-btn, .app-header .theme-toggle { align-items: center; border-radius: 8px; justify-content: center; min-height: 42px; min-width: 42px; }
+.app-header .back-btn:active, .app-header .theme-toggle:active { background: rgba(255,255,255,.13); }
+.app-header .subtitle { letter-spacing: .045em; text-transform: none; }
+
+.bottom-nav { box-shadow: 0 -6px 20px rgba(28,27,24,.07); }
+.nav-item { border-top: 0; font-size: calc(11px * var(--tsize-mult)); gap: 2px; min-height: 48px; }
+.nav-item .nav-icon { border-radius: 999px; height: 27px; transition: background .18s, color .18s, transform .18s; width: 38px; }
+.nav-item.active { color: var(--green); }
+.nav-item.active .nav-icon { background: var(--green-wash); transform: translateY(-1px); }
+
+.home-container { margin: 0 auto; max-width: 980px; padding: 20px clamp(14px, 3vw, 28px) 30px; }
+.home-hero { border-bottom: 0; margin-bottom: 16px; padding: 2px 2px 0; text-align: left; }
+.home-hero .hero-kicker { letter-spacing: .11em; }
+.home-hero h2 { font-size: clamp(calc(21px * var(--tsize-mult)), 3vw, calc(28px * var(--tsize-mult))); margin-top: 5px; }
+.home-search-bar, .search-input-wrap { border-color: var(--line-strong); box-shadow: var(--shadow); min-height: 48px; }
+.home-search-bar { margin-bottom: 18px; }
+.home-search-bar:focus-within, .search-input-wrap:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-wash); }
+
+.dashboard-grid { gap: 12px; }
+.dash-card { align-items: flex-start; border-top-width: 1px; justify-content: flex-start; min-height: 116px; padding: 15px; text-align: left; }
+.dash-card .card-icon { align-items: center; background: var(--green-wash); border-radius: 9px; height: 38px; justify-content: center; margin-bottom: 12px; width: 38px; }
+.dash-card.card-emergency .card-icon, .dash-card[style*="var(--red)"] .card-icon { background: var(--red-wash); }
+.dash-card.card-paeds .card-icon { background: var(--gold-wash); }
+.dash-card .card-label { font-size: calc(14px * var(--tsize-mult)); line-height: 1.3; }
+.dash-card .card-count { font-size: calc(11.5px * var(--tsize-mult)); margin-top: 4px; }
+
+.search-container, .list-container { margin: 0 auto; max-width: 980px; padding: 16px clamp(14px, 3vw, 24px) 28px; }
+.search-container > .search-input-wrap { position: sticky; top: 0; z-index: 22; }
+.search-result-item, .list-item { border-radius: 10px; margin-bottom: 8px; min-height: 62px; padding: 13px 15px; }
+.search-result-item .r-icon, .list-item .li-icon { border-radius: 8px; height: 38px; width: 38px; }
+.search-result-item .r-title, .list-item .li-title { font-size: calc(15px * var(--tsize-mult)); line-height: 1.35; }
+.search-result-item .r-sub, .list-item .li-sub { font-size: calc(12px * var(--tsize-mult)); line-height: 1.45; margin-top: 3px; }
+.list-item .li-chevron, .search-result-item .r-chevron { transition: color .15s, transform .15s; }
+.list-container .section-header, .search-results .section-header { backdrop-filter: blur(10px); background: color-mix(in srgb, var(--paper) 94%, transparent); }
+
+.detail-container { padding-top: clamp(22px, 4vw, 36px); }
+.detail-header { border-bottom: 0; border-left: 4px solid var(--green); margin-bottom: 22px; padding: 2px 0 3px 16px; }
+.detail-header .detail-code { letter-spacing: .065em; }
+.detail-header .detail-type { line-height: 1.45; }
+.source-assurance { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-bg) 45%, transparent); margin-top: 0; }
+.topic-nav { top: 8px; }
+.source-block h3 { scroll-margin-top: 118px; }
+.source-block p, .source-block li { text-wrap: pretty; }
+.source-table-wrap { box-shadow: 0 8px 26px rgba(28,27,24,.08); }
+.source-table tbody tr { transition: background .12s; }
+.drug-filter-row { padding-bottom: 7px; }
+.drug-filter-chip { min-height: 40px; padding: 0 15px; }
+.drug-mention-card { border-radius: 10px; padding: 15px 16px; }
+.drug-mention-link { color: var(--green); }
+
+.settings-item { border: 1px solid var(--line); border-radius: 9px !important; margin-bottom: 7px; min-height: 50px; }
+.settings-item .si-label { font-size: calc(14px * var(--tsize-mult)); font-weight: 600; }
+.settings-item .si-value { line-height: 1.35; margin-left: 14px; text-align: right; }
+.section-header { letter-spacing: .065em; }
+.utility-fab { height: 44px; width: 44px; }
+
+@media (hover: hover) {
+  .dash-card:hover, .list-item:hover, .search-result-item:hover, .drug-mention-card:hover { border-color: color-mix(in srgb, var(--green) 48%, var(--line)); transform: translateY(-1px); }
+  .nav-item:hover .nav-icon { background: var(--green-wash); }
+  .list-item:hover .li-chevron, .search-result-item:hover .r-chevron { color: var(--green); transform: translateX(2px); }
+}
+
+@media (min-width: 768px) {
+  .main-content { max-width: 1120px; }
+  .dashboard-grid { grid-template-columns: repeat(3, 1fr); }
+  .dash-card { min-height: 132px; }
+  .detail-container { max-width: 1020px; }
+}
+
+@media (max-width: 520px) {
+  .home-container { padding-top: 15px; }
+  .home-hero .hero-kicker { font-size: calc(10px * var(--tsize-mult)); }
+  .dashboard-grid { gap: 8px; }
+  .dash-card { min-height: 108px; padding: 13px; }
+  .dash-card .card-icon { height: 34px; margin-bottom: 9px; width: 34px; }
+  .detail-header { padding-left: 12px; }
+  .source-assurance-heading { font-size: calc(14px * var(--tsize-mult)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+/* === DESIGN REFINEMENT: mobile companion / desktop clinical workspace === */
+:root {
+  --paper: #F3F6F3;
+  --line: #D5DED7;
+  --line-strong: #AEBEB2;
+  --hero-green: #075D36;
+}
+html[data-theme="dark"] {
+  --paper: #111713;
+  --card-bg: #1B231D;
+  --line: #344138;
+  --line-strong: #526157;
+  --hero-green: #124C31;
+}
+body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green) 3%, var(--paper)), var(--paper) 38%); }
+
+.home-hero {
+  background: linear-gradient(135deg, var(--hero-green), color-mix(in srgb, var(--hero-green) 82%, #000));
+  border: 1px solid rgba(255,255,255,.1); border-radius: 15px; box-shadow: 0 12px 32px rgba(0,55,28,.16);
+  color: #fff; margin-bottom: 14px; overflow: hidden; padding: clamp(18px, 4vw, 28px); position: relative;
+}
+.home-hero::after { background: linear-gradient(90deg, var(--gold), #E7B744); bottom: 0; content: ''; height: 4px; left: 0; position: absolute; right: 0; }
+.home-hero .hero-kicker { color: #F0C65A; }
+.home-hero h2 { color: #fff; max-width: 18em; }
+.home-hero .edition { color: rgba(255,255,255,.76); }
+.home-assurance { align-items: center; border-top: 1px solid rgba(255,255,255,.17); display: flex; flex-wrap: wrap; gap: 8px 14px; margin-top: 17px; padding-top: 13px; }
+.home-assurance-status { align-items: center; display: flex; font-size: calc(12.5px * var(--tsize-mult)); font-weight: 800; gap: 7px; }
+.home-assurance-status svg { color: #F0C65A; height: 17px; width: 17px; }
+.home-assurance-meta { color: rgba(255,255,255,.74); font-size: calc(12px * var(--tsize-mult)); font-weight: 600; }
+
+.dash-card { position: relative; }
+.dash-card::after { background: var(--green); border-radius: 999px; content: ''; height: 24px; opacity: 0; position: absolute; right: 13px; top: 13px; transform: scale(.6); transition: opacity .18s, transform .18s; width: 3px; }
+.dash-card:focus-visible::after, .dash-card:hover::after { opacity: .8; transform: scale(1); }
+.dash-card.card-emergency::after, .dash-card[style*="var(--red)"]::after { background: var(--red); }
+.dash-card.card-paeds::after { background: var(--gold); }
+
+.audited-page { position: relative; }
+.audited-page-label span { background: var(--card-bg); border-color: var(--line-strong); box-shadow: 0 2px 8px rgba(28,27,24,.05); }
+.source-block h3 { letter-spacing: -.01em; }
+.source-callout, .source-warning, .source-formula { box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 8%, transparent); }
+
+@media (min-width: 900px) {
+  .bottom-nav {
+    align-items: stretch; bottom: 0; box-shadow: 5px 0 22px rgba(28,27,24,.06); flex-direction: column;
+    height: auto; justify-content: flex-start; left: 0; padding: 20px 12px; right: auto;
+    top: calc(var(--header-height) + var(--safe-top)); width: 196px;
+  }
+  .nav-item {
+    border-radius: 9px; flex: 0 0 auto; flex-direction: row; font-size: calc(13px * var(--tsize-mult));
+    font-weight: 700; gap: 11px; justify-content: flex-start; min-height: 48px; padding: 7px 10px;
+  }
+  .nav-item .nav-icon { flex: 0 0 36px; }
+  .nav-item.active { background: var(--green-wash); }
+  .nav-item.active .nav-icon { background: var(--green); color: var(--white); }
+  .main-content { bottom: 0; left: 196px; margin: 0; max-width: none; }
+  .home-container { padding-top: 28px; }
+  #screen-detail .detail-container, #screen-drug-detail .detail-container {
+    background: var(--card-bg); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow);
+    margin-bottom: 38px; margin-top: 26px; padding: 34px clamp(30px, 5vw, 54px) 44px;
+  }
+  .search-container, .list-container { padding-top: 26px; }
+  .utility-fabs { left: 216px; }
+  .source-table th:first-child { left: 0; z-index: 4; }
+  .source-table td:first-child { background: var(--card-bg); box-shadow: 5px 0 10px rgba(28,27,24,.04); left: 0; position: sticky; z-index: 1; }
+  .source-table tr:nth-child(even) td:first-child { background: color-mix(in srgb, var(--paper) 65%, var(--card-bg)); }
+}
+
+@media (max-width: 899px) {
+  .main-content { max-width: none; }
+}
+
+@media (max-width: 520px) {
+  .home-hero { border-radius: 12px; padding: 17px 16px 19px; }
+  .home-assurance { align-items: flex-start; flex-direction: column; gap: 4px; margin-top: 13px; padding-top: 11px; }
+}
+
+/* Compact source assurance: provenance stays visible without delaying content. */
+.source-assurance.topic-assurance { overflow: hidden; padding: 0; }
+.source-assurance-toggle {
+  align-items: center; cursor: pointer; display: grid; gap: 10px; grid-template-columns: auto minmax(0, 1fr) auto auto;
+  list-style: none; min-height: 52px; padding: 10px 12px;
+}
+.source-assurance-toggle::-webkit-details-marker { display: none; }
+.source-assurance-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; }
+.source-assurance-label { min-width: 0; }
+.source-assurance-label strong { color: var(--ink); display: block; font-size: calc(13.5px * var(--tsize-mult)); line-height: 1.25; }
+.source-assurance-label span { color: var(--green); display: block; font-size: calc(12px * var(--tsize-mult)); font-weight: 700; margin-top: 2px; }
+.needs-review .source-assurance-label span { color: #765000; }
+.source-assurance-page { color: var(--ink-soft); font-size: calc(11.5px * var(--tsize-mult)); font-weight: 700; white-space: nowrap; }
+.source-assurance-expand { color: var(--green); display: flex; transform: rotate(90deg); transition: transform .18s ease; }
+.source-assurance-expand svg { height: 16px; width: 16px; }
+.topic-assurance[open] .source-assurance-expand { transform: rotate(-90deg); }
+.source-assurance-details { border-top: 1px solid var(--line); padding: 0 12px 12px; }
+.source-assurance-description { color: var(--ink); font-size: calc(13px * var(--tsize-mult)); line-height: 1.55; margin-top: 10px; }
+.source-assurance-details .source-assurance-facts, .source-assurance-details .source-assurance-note { margin-left: 0; }
+
+/* Per-table view choice: comparison grid or vertically scannable cards. */
+.source-table-component { margin: 20px 0 24px; }
+.source-table-component .source-table-wrap { margin: 0; }
+.source-table-toolbar { align-items: center; display: flex; gap: 10px; justify-content: space-between; margin-bottom: 7px; }
+.source-table-toolbar-label { color: var(--ink-soft); font-size: calc(12px * var(--tsize-mult)); font-weight: 750; }
+.table-view-switch { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; display: inline-flex; gap: 2px; padding: 2px; }
+.table-view-button { background: transparent; border: 0; border-radius: 6px; color: var(--ink-soft); cursor: pointer; font: 750 calc(12px * var(--tsize-mult))/1 var(--sans); min-height: 34px; padding: 0 11px; }
+.table-view-button[aria-pressed="true"] { background: var(--green); color: var(--white); }
+
+.source-table-component.view-cards .source-table-wrap { background: transparent; border: 0; box-shadow: none; max-height: none; overflow: visible; }
+.source-table-component.view-cards .source-table { border: 0; min-width: 0; }
+.source-table-component.view-cards .source-table caption { background: transparent; border-bottom: 2px solid var(--green); padding: 0 0 10px; }
+.source-table-component.view-cards .source-table thead { display: none; }
+.source-table-component.view-cards .source-table tbody,
+.source-table-component.view-cards .source-table tr,
+.source-table-component.view-cards .source-table td { display: block; width: 100%; }
+.source-table-component.view-cards .source-table tr { background: var(--card-bg); border: 1px solid var(--line); border-radius: 9px; box-shadow: var(--shadow); margin: 12px 0; overflow: hidden; }
+.source-table-component.view-cards .source-table td,
+.source-table-component.view-cards .source-table tr:nth-child(even) td { align-items: start; background: var(--card-bg); border: 0; border-bottom: 1px solid var(--line); box-shadow: none; display: grid; gap: 12px; grid-template-columns: minmax(110px, 34%) 1fr; left: auto; padding: 11px 12px; position: static; width: 100%; }
+.source-table-component.view-cards .source-table td:last-child { border-bottom: 0; }
+.source-table-component.view-cards .source-table td::before { color: var(--green); content: attr(data-label); display: block; font-size: calc(12px * var(--tsize-mult)); font-weight: 800; line-height: 1.35; }
+.source-table-component.view-cards .source-table td:empty { display: none; }
+
+@media (max-width: 720px) {
+  .source-assurance-page { max-width: 92px; overflow: hidden; text-overflow: ellipsis; }
+  .source-table-component.view-table .source-table-wrap { background: var(--card-bg); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); max-height: min(68vh, 720px); overflow: auto; }
+  .source-table-component.view-table .source-table { border: 0; border-collapse: separate; display: table; min-width: 620px; width: 100%; }
+  .source-table-component.view-table .source-table caption { background: var(--card-bg); border-bottom: 1px solid var(--line); display: table-caption; padding: 16px 18px 13px; }
+  .source-table-component.view-table .source-table thead { display: table-header-group; }
+  .source-table-component.view-table .source-table tbody { display: table-row-group; }
+  .source-table-component.view-table .source-table tr { background: transparent; border: 0; border-radius: 0; box-shadow: none; display: table-row; margin: 0; }
+  .source-table-component.view-table .source-table th,
+  .source-table-component.view-table .source-table td,
+  .source-table-component.view-table .source-table tr:nth-child(even) td { display: table-cell; padding: 11px 12px; position: static; width: auto; }
+  .source-table-component.view-table .source-table th { position: sticky; top: 0; }
+  .source-table-component.view-table .source-table td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .source-table-component.view-table .source-table tr:nth-child(even) td { background: color-mix(in srgb, var(--paper) 65%, var(--card-bg)); }
+  .source-table-component.view-table .source-table td::before { content: none; display: none; }
+}
+
+</style>
+</head>
+<body>
+<script src="assets/data-embed.js"></script>
+
+<!-- SPLASH SCREEN (title-page style) -->
+<div id="splash-screen">
+  <img class="seal-lg" src="assets/moh-emblem.png" alt="Zambia Ministry of Health emblem">
+  <div class="republic">Republic of Zambia</div>
+  <h1>Ministry of Health</h1>
+  <div class="rule"></div>
+  <div class="doc-title">Standard Treatment Guidelines</div>
+  <div class="edition-banner">Sixth Edition &middot; 2025</div>
+  <div class="loading-bar"><div class="loading-bar-inner"></div></div>
+  <div class="version">Clinical Companion &middot; v2.0.0</div>
+  <div class="dev-credit">Developed by Perseverance | Mr. Lushomo Mwiinde, ML</div>
+  <div class="splash-disclaimer">Demo build, not yet endorsed by the Ministry of Health &mdash; pending review and approval</div>
+</div>
+
+<!-- HEADER -->
+<header class="app-header">
+  <button class="back-btn" id="backBtn" onclick="goBack()" aria-label="Go back" title="Back">
+    <svg class="icon" viewBox="0 0 24 24"><polyline points="15 5 8 12 15 19"/></svg>
+  </button>
+  <span class="seal" id="headerSeal" onclick="goHome()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}" role="button" tabindex="0" aria-label="ZSTG home" title="Home">
+    <img src="assets/moh-emblem.png" alt="Zambia Ministry of Health emblem" width="100%" height="100%">
+  </span>
+  <div class="head-text">
+    <h1 id="headerTitle">ZSTG</h1>
+    <div class="subtitle" id="headerSub">Ministry of Health &middot; Edition 6 (2025)</div>
+  </div>
+  <button class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle dark mode" title="Toggle dark mode">
+    <svg class="icon" viewBox="0 0 24 24" id="themeToggleIcon"><circle cx="12" cy="12" r="4.5"/><path d="M12 2 v3 M12 19 v3 M4.2 4.2 l2.1 2.1 M17.7 17.7 l2.1 2.1 M2 12 h3 M19 12 h3 M4.2 19.8 l2.1 -2.1 M17.7 6.3 l2.1 -2.1"/></svg>
+  </button>
+</header>
+
+<!-- NETWORK STATUS BANNER -->
+<div class="network-banner" id="networkBanner">You're offline &mdash; all guideline content still works</div>
+
+<!-- UPDATE AVAILABLE BANNER (shown when a new service worker takes control of an already-open app) -->
+<div class="action-banner" id="updateBanner">
+  <span class="ab-icon"><svg viewBox="0 0 24 24"><path d="M4 4 v6 h6 M20 20 v-6 h-6"/><path d="M5.5 15 a8 8 0 0 0 13.9 3 M18.5 9 a8 8 0 0 0 -13.9 -3"/></svg></span>
+  <span class="ab-text">Updated guideline content is ready</span>
+  <button class="ab-btn" onclick="applyUpdate()">Refresh</button>
+  <button class="ab-dismiss" onclick="dismissUpdateBanner()" aria-label="Dismiss later"><svg viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg></button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content" id="mainContent">
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="screen-home">
+    <div class="home-container">
+      <div class="app-disclaimer">
+        <span class="ad-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L22 20 H2 Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+        <div class="ad-text"><strong>Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, presented for the Ministry of Health's review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</div>
+      </div>
+      <div class="home-hero">
+        <div class="hero-kicker">Republic of Zambia &middot; Ministry of Health</div>
+        <h2>Standard Treatment Guidelines</h2>
+        <p class="edition">Sixth Edition (2025) &middot; Clinical Reference Companion</p>
+        <div class="home-assurance">
+          <span class="home-assurance-status"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><polyline points="8.5 12 11 14.5 15.8 9.5"/></svg> Final audited source</span>
+          <span class="home-assurance-meta"><span id="homeTopicCount">153</span> topics &middot; <span id="homeDrugCount">158</span> medicines &middot; Offline ready</span>
+        </div>
+      </div>
+      <div class="home-search-bar" onclick="showScreen('search')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showScreen('search');}" role="button" tabindex="0" aria-label="Open guideline search">
+        <span class="search-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+        <input type="text" placeholder="Search conditions, medicines, symptoms..." readonly>
+      </div>
+      <div class="dashboard-grid">
+        <button class="dash-card card-emergency" onclick="showEmergencyGuidelines()">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M7 15V9a5 5 0 0 1 10 0v6"/><path d="M5 18h14M8 15h8"/><path d="M12 1v3M4.5 5.2l2.1 1.2M19.5 5.2l-2.1 1.2"/></svg></span>
+          <span class="card-label">Emergency Protocols</span>
+          <span class="card-count" id="emergencyCount">0</span>
+        </button>
+        <button class="dash-card card-paeds" onclick="showDrugGuide()">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><path d="m8.5 4.5 11 11a3.5 3.5 0 0 1-5 5l-11-11a3.5 3.5 0 0 1 5-5Z"/><line x1="9" y1="15" x2="15" y2="9"/></svg></span>
+          <span class="card-label">Drug Guide</span>
+          <span class="card-count" id="drugCount">0</span>
+        </button>
+        <button class="dash-card" onclick="navigateToCategory('emergencies_and_poisons')" style="border-top-color:var(--red)">
+          <span class="card-icon" style="color:var(--red)"><svg class="icon" viewBox="0 0 24 24"><path d="m12 3 10 18H2Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17.5" r=".7" fill="currentColor" stroke="none"/></svg></span>
+          <span class="card-label">Emergencies &amp; Poisons</span>
+          <span class="card-count" id="cat0Count">0</span>
+        </button>
+        <button class="dash-card" onclick="navigateToCategory('anaesthesia_and_critical_care')" style="border-top-color:var(--green)">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3 12h4l2-6 4 12 2-6h6"/><path d="M5 4.5A9 9 0 0 1 20.5 9M19 18a9 9 0 0 1-14.7-2" opacity=".55"/></svg></span>
+          <span class="card-label">Anaesthesia &amp; Critical Care</span>
+          <span class="card-count" id="cat1Count">0</span>
+        </button>
+        <button class="dash-card card-adult" onclick="showBookmarks()">
+          <span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M7 4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5V21l-5-3-5 3Z"/></svg></span>
+          <span class="card-label">Bookmarks</span>
+          <span class="card-count" id="bookmarkCount">0</span>
+        </button>
+        <button class="dash-card" onclick="showScreen('settings')" style="border-top-color:#8A8574">
+          <span class="card-icon" style="color:#6B6656"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3 v3 M12 18 v3 M3 12 h3 M18 12 h3 M5.6 5.6 l2.1 2.1 M16.3 16.3 l2.1 2.1 M18.4 5.6 l-2.1 2.1 M7.7 16.3 l-2.1 2.1"/></svg></span>
+          <span class="card-label">Settings</span>
+          <span class="card-count">v2.0.0</span>
+        </button>
+      </div>
+      <div id="recentSearchSection" style="display:none;">
+        <div class="section-header">Recent Searches</div>
+        <div id="recentSearchList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH SCREEN -->
+  <div class="screen" id="screen-search">
+    <div class="search-container">
+      <div class="search-input-wrap">
+        <span class="si"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+        <input type="text" id="searchInput" placeholder="Search conditions, medicines, symptoms..." autocomplete="off" oninput="doSearch(this.value)">
+        <button class="clear-btn" id="searchClearBtn" onclick="clearSearchInput()" aria-label="Clear search">&times;</button>
+      </div>
+      <div id="searchHistory" class="search-history"></div>
+      <div id="searchResults" class="search-results"></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY LIST SCREEN -->
+  <div class="screen" id="screen-category">
+    <div class="list-container" id="categoryList"></div>
+  </div>
+
+  <!-- EMERGENCIES SCREEN -->
+  <div class="screen" id="screen-emergencies">
+    <div class="list-container" id="emergencyList"></div>
+  </div>
+
+  <!-- DRUG GUIDE SCREEN -->
+  <div class="screen" id="screen-drugs">
+    <div class="search-container">
+      <div class="search-input-wrap">
+        <span class="si"><svg class="icon" viewBox="0 0 24 24"><rect x="4" y="9" width="16" height="6" rx="3" transform="rotate(45 12 12)"/><line x1="12" y1="7.8" x2="12" y2="16.2" transform="rotate(45 12 12)"/></svg></span>
+        <input type="text" id="drugSearchInput" placeholder="Search medicines, fluids or aliases..." autocomplete="off" oninput="searchDrugs(this.value)">
+      </div>
+      <div id="drugFilters" class="drug-filter-row" aria-label="Therapeutic category filters"></div>
+      <div id="drugList" class="search-results"></div>
+    </div>
+  </div>
+
+  <!-- DRUG DETAIL SCREEN -->
+  <div class="screen" id="screen-drug-detail">
+    <div class="detail-container" id="drugDetailContent"></div>
+  </div>
+
+  <!-- DISEASE DETAIL SCREEN -->
+  <div class="screen" id="screen-detail">
+    <div class="detail-container" id="detailContent"></div>
+  </div>
+
+  <!-- BOOKMARKS SCREEN -->
+  <div class="screen" id="screen-bookmarks">
+    <div class="list-container" id="bookmarkList"></div>
+  </div>
+
+  <!-- SETTINGS SCREEN -->
+  <div class="screen" id="screen-settings">
+    <div class="list-container">
+      <div class="section-header">App Information</div>
+      <div class="settings-item"><span class="si-label">STG Edition</span><span class="si-value">Sixth Edition (2025)</span></div>
+      <div class="settings-item"><span class="si-label">App Version</span><span class="si-value">2.0.0</span></div>
+      <div class="settings-item" id="dataInfo"><span class="si-label">Data Coverage</span><span class="si-value">Loading...</span></div>
+      <div class="settings-item" id="sourceInfo"><span class="si-label">Source Assurance</span><span class="si-value">Loading...</span></div>
+      <div class="section-header" style="margin-top:16px;">Display</div>
+      <div class="settings-item" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px;">
+        <span class="si-label">Appearance</span>
+        <div class="text-size-control" id="themeControl">
+          <button class="theme-mode-item" data-theme="light" onclick="setTheme('light')">Light</button>
+          <button class="theme-mode-item" data-theme="dark" onclick="setTheme('dark')">Dark</button>
+        </div>
+      </div>
+      <div class="settings-item" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px;">
+        <span class="si-label">Text Size</span>
+        <div class="text-size-control" id="textSizeControl">
+          <button data-size="sm" onclick="setTextSize('sm')">A<span style="font-size:0.8em;">-</span></button>
+          <button data-size="md" onclick="setTextSize('md')">A</button>
+          <button data-size="lg" onclick="setTextSize('lg')">A<span style="font-size:1.2em;">+</span></button>
+        </div>
+      </div>
+      <div class="section-header" style="margin-top:16px;">Actions</div>
+      <div class="settings-item" id="installSettingsRow" onclick="triggerInstall()" style="display:none;"><span class="si-label">Install App</span><span class="si-value">Tap to install</span></div>
+      <div class="settings-item" onclick="clearBookmarks()"><span class="si-label">Clear Bookmarks</span><span class="si-value">Tap to clear</span></div>
+      <div class="settings-item" onclick="clearHistory()"><span class="si-label">Clear Search History</span><span class="si-value">Tap to clear</span></div>
+      <div class="section-header" style="margin-top:16px;">Usage Data (this device only)</div>
+      <div style="padding:6px 16px 4px;font-size:calc(12px * var(--tsize-mult));color:var(--ink-soft);line-height:1.6;">
+        Kept only on this phone — nothing is sent anywhere automatically. During a pilot, use "Copy usage summary" to share what this device has actually used.
+      </div>
+      <div class="settings-item" onclick="copyTelemetrySummary()"><span class="si-label">Copy Usage Summary</span><span class="si-value">Tap to copy</span></div>
+      <div class="settings-item" onclick="clearTelemetry()"><span class="si-label">Clear Usage Data</span><span class="si-value">Tap to clear</span></div>
+      <div class="section-header" style="margin-top:16px;">About</div>
+      <div style="padding:14px 16px 4px;font-size:calc(13px * var(--tsize-mult));color:var(--ink-soft);line-height:1.7;">
+        <p style="padding:10px 12px;border:1px solid var(--red);border-left:4px solid var(--red);border-radius:var(--radius-sm);background:var(--red-wash);color:var(--ink);"><strong style="color:var(--red);">Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, presented for the Ministry of Health's review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</p>
+        <p style="margin-top:12px;">The underlying guideline text is sourced from the official Zambia Standard Treatment Guidelines, Sixth Edition (2025), published by the Ministry of Health, Republic of Zambia. Reproducing that text here does not imply the Ministry's endorsement of this application.</p>
+        <p style="margin-top:8px;">All clinical content is sourced from the official STG document. The current dataset passed source-fidelity audit; any future entry requiring verification will be clearly marked at the point of use.</p>
+        <p style="margin-top:10px;font-weight:700;color:var(--ink);">This app is a clinical reference tool. Always verify critical dosing information against the official printed guideline.</p>
+        <p style="margin-top:16px;">Guideline content &copy; 2025 Ministry of Health, Republic of Zambia</p>
+        <p style="margin-top:16px;">Developed by: Mr. Lushomo Mwiinde, Medical Licentiate<br>Company: Perseverance<br>For: Ministry of Health Zambia</p>
+        <p style="margin-top:8px;">App &copy; 2026 Mr. Lushomo Mwiinde / Perseverance. Licensed to Ministry of Health Zambia.</p>
+      </div>
+      <footer>
+        <img src="assets/coat-of-arms-zambia.png" alt="Coat of Arms" class="coat">
+        <p>&copy; 2026 Perseverance | Developed by Mr. Lushomo Mwiinde, ML<br>In collaboration with Ministry of Health Zambia | ZSTG</p>
+      </footer>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST HOST -->
+<div id="toastHost"></div>
+
+<!-- EMERGENCY QUICK-ACCESS FAB -->
+<button class="emergency-fab" id="emergencyFab" onclick="showEmergencyGuidelines()" aria-label="Jump to Emergency Protocols" title="Emergency Protocols">
+  <span class="fab-ring"></span>
+  <svg class="icon" viewBox="0 0 24 24" style="stroke:var(--white);"><path d="M7 15V9a5 5 0 0 1 10 0v6"/><path d="M5 18h14M8 15h8"/><path d="M12 1v3M4.5 5.2l2.1 1.2M19.5 5.2l-2.1 1.2"/></svg>
+</button>
+
+<!-- UTILITY FABS: Back to Top / Share / Print (guideline & drug detail pages only) -->
+<div class="utility-fabs" id="utilityFabs">
+  <button class="utility-fab back-to-top" id="backToTopFab" onclick="scrollDetailToTop()" aria-label="Back to top" title="Back to top">
+    <svg class="icon" viewBox="0 0 24 24"><polyline points="6 12 12 6 18 12"/><line x1="12" y1="6" x2="12" y2="19"/></svg>
+  </button>
+  <button class="utility-fab" onclick="printCurrentGuideline()" aria-label="Print guideline" title="Print">
+    <svg class="icon" viewBox="0 0 24 24"><path d="M6 9 V3 h12 v6 M6 18 h12 v4 H6 Z M4 9 h16 v7 H4 Z"/></svg>
+  </button>
+  <button class="utility-fab" onclick="shareCurrentGuideline()" aria-label="Share guideline" title="Share">
+    <svg class="icon" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><line x1="8.3" y1="10.8" x2="15.7" y2="6.2"/><line x1="8.3" y1="13.2" x2="15.7" y2="17.8"/></svg>
+  </button>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav" aria-label="Primary navigation">
+  <button class="nav-item active" onclick="showScreen('home')" aria-current="page">
+    <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5.5 9.5V21h13V9.5M9.5 21v-7h5v7"/></svg></span> Home
+  </button>
+  <button class="nav-item" onclick="showScreen('search')">
+    <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span> Search
+  </button>
+  <button class="nav-item" onclick="showScreen('categories')">
+    <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M3.5 5.5A3.5 3.5 0 0 1 7 4h5v16H7a3.5 3.5 0 0 0-3.5 1.5Z"/><path d="M20.5 5.5A3.5 3.5 0 0 0 17 4h-5v16h5a3.5 3.5 0 0 1 3.5 1.5Z"/></svg></span> Browse
+  </button>
+  <button class="nav-item" onclick="showBookmarks()">
+    <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M7 4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5V21l-5-3-5 3Z"/></svg></span> Saved
+  </button>
+  <button class="nav-item" onclick="showScreen('settings')">
+    <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3 v3 M12 18 v3 M3 12 h3 M18 12 h3 M5.6 5.6 l2.1 2.1 M16.3 16.3 l2.1 2.1 M18.4 5.6 l-2.1 2.1 M7.7 16.3 l-2.1 2.1"/></svg></span> Settings
+  </button>
+</nav>
+
+<!-- CATEGORIES SCREEN (hidden from main, accessed via nav) -->
+<div class="screen" id="screen-categories">
+  <div class="list-container" id="categoriesList"></div>
+</div>
+
+<script>
+// === ICON LIBRARY (inline SVG, offline-safe) ===
+const ICON_PATHS = {
+  siren: '<path d="M7 15V9a5 5 0 0 1 10 0v6"/><path d="M5 18h14M8 15h8"/><path d="M12 1v3M4.5 5.2l2.1 1.2M19.5 5.2l-2.1 1.2"/>',
+  pulse: '<path d="M3 12h4l2-6 4 12 2-6h6"/><path d="M5 4.5A9 9 0 0 1 20.5 9M19 18a9 9 0 0 1-14.7-2" opacity=".55"/>',
+  baby: '<circle cx="12" cy="9" r="5"/><path d="M7 18 c0 -3 2 -4 5 -4 s5 1 5 4"/>',
+  child: '<circle cx="12" cy="6" r="3.2"/><path d="M12 9.2 v6 M9 12 h6 M9 21 l3 -6 l3 6"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21 c0 -4.5 3.5 -7 8 -7 s8 2.5 8 7"/>',
+  maternal: '<circle cx="12" cy="6" r="3"/><path d="M9 9 c-2 1 -3 3 -3 6 a6 4 0 0 0 12 0 c0 -3 -1 -5 -3 -6"/>',
+  pill: '<path d="m8.5 4.5 11 11a3.5 3.5 0 0 1-5 5l-11-11a3.5 3.5 0 0 1 5-5Z"/><line x1="9" y1="15" x2="15" y2="9"/>',
+  book: '<path d="M3.5 5.5A3.5 3.5 0 0 1 7 4h5v16H7a3.5 3.5 0 0 0-3.5 1.5Z"/><path d="M20.5 5.5A3.5 3.5 0 0 0 17 4h-5v16h5a3.5 3.5 0 0 1 3.5 1.5Z"/>',
+  bookmark: '<path d="M7 4.5A1.5 1.5 0 0 1 8.5 3h7A1.5 1.5 0 0 1 17 4.5V21l-5-3-5 3Z"/>',
+  'bookmark-filled': '<path fill="currentColor" stroke="none" d="M8.5 2.5h7A2 2 0 0 1 17.5 4.5V22L12 18.7 6.5 22V4.5a2 2 0 0 1 2-2Z"/>',
+  heart: '<path d="M12 20 C6 15 3 12 3 8.5 C3 5.9 5.1 4 7.6 4 C9.2 4 10.6 4.9 12 6.5 C13.4 4.9 14.8 4 16.4 4 C18.9 4 21 5.9 21 8.5 C21 12 18 15 12 20 Z"/>',
+  'heart-filled': '<path fill="currentColor" stroke="none" d="M12 20 C6 15 3 12 3 8.5 C3 5.9 5.1 4 7.6 4 C9.2 4 10.6 4.9 12 6.5 C13.4 4.9 14.8 4 16.4 4 C18.9 4 21 5.9 21 8.5 C21 12 18 15 12 20 Z"/>',
+  warning: '<path d="M12 3 L22 20 H2 Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/>',
+  check: '<circle cx="12" cy="12" r="9"/><polyline points="8 12.5 10.8 15.2 16.5 9"/>',
+  'shield-check': '<path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><polyline points="8.5 12 11 14.5 15.8 9.5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 16 14"/>',
+  link: '<ellipse cx="9" cy="15" rx="4.2" ry="2.4" transform="rotate(-45 9 15)"/><ellipse cx="15" cy="9" rx="4.2" ry="2.4" transform="rotate(-45 15 9)"/>',
+  bulb: '<path d="M9 18 h6 M10 21 h4 M12 3 a6 6 0 0 0 -3 11.2 c0.6 0.5 1 1.2 1 2.3 h4 c0 -1.1 0.4 -1.8 1 -2.3 A6 6 0 0 0 12 3 Z"/>',
+  file: '<path d="M7 3 h7 l4 4 v14 H7 Z"/><path d="M14 3 v4 h4"/>',
+  flow: '<rect x="4" y="3" width="7" height="5" rx="1"/><rect x="13" y="16" width="7" height="5" rx="1"/><path d="M7.5 8 v4 h9 v4"/>',
+  clipboard: '<rect x="5" y="4" width="14" height="17" rx="1.5"/><rect x="9" y="2.5" width="6" height="3" rx="1"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/>',
+  ruler: '<rect x="3" y="9" width="18" height="6" rx="1"/><line x1="6" y1="9" x2="6" y2="12"/><line x1="9" y1="9" x2="9" y2="12"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="15" y1="9" x2="15" y2="12"/><line x1="18" y1="9" x2="18" y2="12"/>',
+  gauge: '<path d="M4 16 a8 8 0 0 1 16 0"/><line x1="12" y1="16" x2="16" y2="11"/><circle cx="12" cy="16" r="1.1" fill="currentColor" stroke="none"/>',
+  chevron: '<polyline points="9 5 16 12 9 19"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3 v3 M12 18 v3 M3 12 h3 M18 12 h3 M5.6 5.6 l2.1 2.1 M16.3 16.3 l2.1 2.1 M18.4 5.6 l-2.1 2.1 M7.7 16.3 l-2.1 2.1"/>'
+};
+function ic(name, size) {
+  const p = ICON_PATHS[name] || ICON_PATHS.file;
+  return '<svg class="icon" style="width:' + (size || '1em') + ';height:' + (size || '1em') + ';" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">' + p + '</svg>';
+}
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// === DATA STORE ===
+let DATA = null;
+let BOOKMARKS = JSON.parse(localStorage.getItem('zstg_bookmarks') || '[]');
+let SEARCH_HISTORY = JSON.parse(localStorage.getItem('zstg_search_history') || '[]');
+let currentScreen = 'home';
+let currentDetailId = null;
+let screenStack = [];
+let DRUG_CATEGORY = 'All';
+let TOPIC_NAV_SCROLL_HANDLER = null;
+let RENDER_ID_SEEN = new Set();
+let DATA_REF_INDEX = null;
+
+// === TEXT SIZE (accessibility) ===
+function setTextSize(size) {
+  document.documentElement.setAttribute('data-text-size', size);
+  localStorage.setItem('zstg_text_size', size);
+  document.querySelectorAll('#textSizeControl button').forEach(b => {
+    b.classList.toggle('active', b.dataset.size === size);
+  });
+}
+
+function initTextSize() {
+  const saved = localStorage.getItem('zstg_text_size') || 'md';
+  setTextSize(saved);
+}
+
+// === DARK MODE ===
+const SUN_PATH = '<circle cx="12" cy="12" r="4.5"/><path d="M12 2 v3 M12 19 v3 M4.2 4.2 l2.1 2.1 M17.7 17.7 l2.1 2.1 M2 12 h3 M19 12 h3 M4.2 19.8 l2.1 -2.1 M17.7 6.3 l2.1 -2.1"/>';
+const MOON_PATH = '<path d="M20 14.5 A8.5 8.5 0 1 1 9.5 4 A6.8 6.8 0 0 0 20 14.5 Z"/>';
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#0F0E09' : '#006400');
+  const icon = document.getElementById('themeToggleIcon');
+  if (icon) icon.innerHTML = theme === 'dark' ? MOON_PATH : SUN_PATH;
+  document.querySelectorAll('.theme-mode-item').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+}
+function setTheme(theme) {
+  localStorage.setItem('zstg_theme', theme);
+  applyTheme(theme);
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  setTheme(current === 'dark' ? 'light' : 'dark');
+  haptic();
+}
+function initTheme() {
+  const saved = localStorage.getItem('zstg_theme');
+  if (saved) { applyTheme(saved); return; }
+  // No stored preference yet — respect the device's own setting.
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(prefersDark ? 'dark' : 'light');
+}
+
+// === NETWORK STATUS ===
+function updateNetworkBanner() {
+  const banner = document.getElementById('networkBanner');
+  if (!banner) return;
+  if (navigator.onLine === false) {
+    banner.textContent = "You're offline — all guideline content still works";
+    banner.classList.add('visible');
+    setTimeout(() => banner.classList.remove('visible'), 3000);
+  }
+}
+
+// === INIT ===
+function init() {
+  try {
+    DATA = EMBEDDED_ZSTG_DATA;
+    buildDataReferenceIndex();
+    initTextSize();
+    initTheme();
+    trackSession();
+    window.addEventListener('online', updateNetworkBanner);
+    window.addEventListener('offline', updateNetworkBanner);
+    updateNetworkBanner();
+    
+    // Update counts
+    document.getElementById('dataInfo').querySelector('.si-value').textContent = 
+      DATA.meta.total_conditions + ' conditions, ' + DATA.meta.unique_drugs + ' drugs';
+    const sourceInfo = document.getElementById('sourceInfo');
+    if (sourceInfo) sourceInfo.querySelector('.si-value').textContent =
+      (DATA.meta.source_status === 'FINAL AUDITED' ? 'Final audited' : 'Review required') + ' · ' + DATA.meta.source_files + ' source files';
+    
+    // Category counts
+    for (const [key, section] of Object.entries(DATA.sections)) {
+      const count = DATA.conditions.filter(c => c.section === key).length;
+      const el = document.getElementById('cat' + (key === 'emergencies_and_poisons' ? '0' : key === 'anaesthesia_and_critical_care' ? '1' : '2') + 'Count');
+      if (el) el.textContent = count + ' conditions';
+    }
+    
+    // Emergency count
+    document.getElementById('emergencyCount').textContent = 
+      DATA.conditions.filter(c => DATA.emergency_ids ? DATA.emergency_ids.includes(c.id) : 
+        c.section === 'emergencies_and_poisons').length + ' protocols';
+    
+    // Drug count
+    document.getElementById('drugCount').textContent = DATA.meta.unique_drugs + ' medicines';
+    const homeTopicCount = document.getElementById('homeTopicCount');
+    const homeDrugCount = document.getElementById('homeDrugCount');
+    if (homeTopicCount) homeTopicCount.textContent = DATA.meta.total_conditions;
+    if (homeDrugCount) homeDrugCount.textContent = DATA.meta.unique_drugs;
+    
+    // Bookmarks count
+    updateBookmarkCount();
+    
+    // Recent searches
+    renderRecentSearches();
+    
+    // Categories list
+    renderCategories();
+    
+    // Preload: show splash then home, then fade out smoothly
+    setTimeout(() => {
+      const splash = document.getElementById('splash-screen');
+      splash.classList.add('hidden');
+      splash.addEventListener('transitionend', () => splash.classList.add('hidden-done'), { once: true });
+    }, 1400);
+  } catch (err) {
+    document.getElementById('splash-screen').innerHTML += 
+      '<p style="color:#FFCDD2;margin-top:20px;">❌ Failed to load data: ' + err.message + '</p>';
+  }
+}
+
+// === NAVIGATION ===
+function showScreen(screenId, pushStack = true) {
+  if (screenId !== 'detail') clearTopicNavigationTracking();
+  if (pushStack && currentScreen !== screenId) {
+    screenStack.push(currentScreen);
+  }
+  
+  // Hide all screens
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active', 'enter-fwd', 'enter-back'));
+  
+  // Show target
+  const target = document.getElementById('screen-' + screenId);
+  if (target) {
+    target.classList.add('active', pushStack ? 'enter-fwd' : 'enter-back');
+  }
+  
+  // Update header
+  const backBtn = document.getElementById('backBtn');
+  if (screenId === 'home' || screenId === 'categories') {
+    backBtn.classList.remove('visible');
+  } else {
+    backBtn.classList.add('visible');
+  }
+  
+  // Update nav — sub-screens map back to their parent tab so highlighting stays accurate
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.remove('active');
+    n.removeAttribute('aria-current');
+  });
+  const navMap = {
+    home: 0,
+    search: 1,
+    categories: 2, category: 2, emergencies: 2, drugs: 2, 'drug-detail': 2, detail: 2,
+    bookmarks: 3,
+    settings: 4
+  };
+  const idx = navMap[screenId];
+  if (idx !== undefined) {
+    const activeNav = document.querySelectorAll('.nav-item')[idx];
+    activeNav.classList.add('active');
+    activeNav.setAttribute('aria-current', 'page');
+  }
+  
+  // Update header title
+  const titles = {
+    home: 'ZSTG', search: 'Search', categories: 'Browse', category: 'Category',
+    emergencies: 'Emergency Protocols', drugs: 'Drug Guide',
+    'drug-detail': 'Drug Information', detail: '', bookmarks: 'Bookmarks',
+    settings: 'Settings'
+  };
+  document.getElementById('headerTitle').textContent = titles[screenId] || 'ZSTG';
+  
+  // Emergency FAB: hide on splash-adjacent home dashboard (already has its own card) and on the emergencies screen itself
+  const fab = document.getElementById('emergencyFab');
+  if (fab) fab.classList.toggle('fab-hidden', screenId === 'emergencies' || screenId === 'home');
+  
+  // Utility FABs (back-to-top / share / print): only relevant on a guideline or drug detail page
+  const utilFabs = document.getElementById('utilityFabs');
+  if (utilFabs) utilFabs.classList.toggle('visible', screenId === 'detail' || screenId === 'drug-detail');
+  const backToTop = document.getElementById('backToTopFab');
+  if (backToTop) backToTop.classList.remove('show-btt');
+  
+  // Autofocus search field for faster typing when arriving at the search screen
+  if (screenId === 'search') {
+    setTimeout(() => {
+      const input = document.getElementById('searchInput');
+      if (input) input.focus();
+    }, 120);
+  }
+  
+  currentScreen = screenId;
+  if (screenId !== 'home') armBackGuard();
+  trackEvent('screen', screenId);
+}
+
+function goBack() {
+  const prev = screenStack.pop();
+  if (prev) showScreen(prev, false);
+}
+
+function goHome() {
+  if (currentScreen === 'home') return;
+  screenStack = [];
+  showScreen('home', false);
+}
+
+// === BACK BUTTON / HISTORY INTEGRATION ===
+// Installed (standalone/fullscreen) PWAs route the Android hardware/gesture
+// back action through the browser History API, not through our screenStack
+// directly — without this, that back action just closes the app instead of
+// stepping back through screens, which is the single biggest "this doesn't
+// feel like a native app" tell on a real device.
+//
+// The approach: keep exactly one extra history entry "armed" whenever the
+// user is anywhere but the home screen. Each physical back press pops that
+// entry, fires popstate, and we redirect it into the existing goBack() logic
+// — then re-arm immediately so the *next* press is caught too. Once goBack()
+// lands back on Home with an empty stack, we deliberately stop re-arming, so
+// the following back press behaves like a normal app and exits.
+let historyArmed = false;
+function armBackGuard() {
+  if (historyArmed) return;
+  historyArmed = true;
+  history.pushState({ zstgNav: true }, '', location.href);
+}
+window.addEventListener('popstate', () => {
+  historyArmed = false;
+  if (currentScreen !== 'home' || screenStack.length) {
+    goBack();
+  }
+  if (currentScreen !== 'home' || screenStack.length) {
+    armBackGuard();
+  }
+});
+
+// === CATEGORIES ===
+function renderCategories() {
+  const container = document.getElementById('categoriesList');
+  container.innerHTML = '<div class="section-header">' + ic('book') + ' Browse by Category</div>';
+  const sorted = Object.entries(DATA.sections).sort((a, b) => a[1].order - b[1].order);
+  
+  for (const [key, section] of sorted) {
+    const count = DATA.conditions.filter(c => c.section === key).length;
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.onclick = () => navigateToCategory(key);
+    div.innerHTML = `
+      <span class="li-icon">${ic(section.icon)}</span>
+      <div class="li-text">
+        <div class="li-title">${section.name}</div>
+        <div class="li-sub">${count} conditions · Section ${section.code}</div>
+      </div>
+      <span class="li-count">${count}</span>
+      <span class="li-chevron">›</span>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function navigateToCategory(sectionKey) {
+  const section = DATA.sections[sectionKey];
+  const items = DATA.conditions.filter(c => c.section === sectionKey);
+  
+  const container = document.getElementById('categoryList');
+  container.innerHTML = `<div class="section-header">${ic(section.icon)} ${section.name}</div>`;
+  
+  // Group by subsection
+  const grouped = {};
+  for (const item of items) {
+    const subKey = item.subsection || 'other';
+    if (!grouped[subKey]) grouped[subKey] = [];
+    grouped[subKey].push(item);
+  }
+  
+  for (const [subKey, subItems] of Object.entries(grouped)) {
+    const subInfo = DATA.subsections[subKey];
+    if (subInfo) {
+      const subDiv = document.createElement('div');
+      subDiv.className = 'subsection-heading';
+      subDiv.innerHTML = `
+        <span class="sub-name">${subInfo.name}</span>
+        <span class="sub-meta">${subInfo.code || ''} · ${subItems.length}</span>
+      `;
+      container.appendChild(subDiv);
+    }
+    
+    for (const item of subItems) {
+      const div = document.createElement('div');
+      div.className = 'list-item';
+      div.onclick = () => showDetail(item.id);
+      const itemTitle = subInfo && item.code === subInfo.code && normalizeTitleForUi(item.title) === normalizeTitleForUi(subInfo.name) ? 'Overview' : item.title;
+      div.innerHTML = `
+        <span class="li-icon">${ic(item.type === 'algorithm' ? 'flow' : item.type === 'protocol' ? 'clipboard' : item.type === 'practice_standards' ? 'ruler' : item.type === 'risk_scoring_tool' ? 'gauge' : item.type === 'cross_reference_stub' ? 'link' : 'file')}</span>
+        <div class="li-text">
+          <div class="li-title">${itemTitle} ${item.has_verification_issues ? ic('warning') : ''}</div>
+          <div class="li-sub">${item.code || ''}</div>
+        </div>
+        <span class="li-chevron">›</span>
+      `;
+      container.appendChild(div);
+    }
+  }
+  
+  screenStack.push(currentScreen);
+  showScreen('category', false);
+  document.getElementById('headerTitle').textContent = section.name;
+}
+
+function normalizeTitleForUi(value) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '');
+}
+
+// === EMERGENCIES ===
+function showEmergencyGuidelines() {
+  const emIds = DATA.emergency_ids || [];
+  const items = DATA.conditions.filter(c => emIds.includes(c.id));
+  
+  const container = document.getElementById('emergencyList');
+  container.innerHTML = '<div class="section-header">' + ic('siren') + ' Emergency Protocols</div>';
+  
+  for (const item of items) {
+    const div = document.createElement('div');
+    div.className = 'list-item';
+    div.onclick = () => showDetail(item.id);
+    div.innerHTML = `
+      <span class="li-icon" style="color:var(--red);">${ic('siren')}</span>
+      <div class="li-text">
+        <div class="li-title">${item.title} ${item.has_verification_issues ? ic('warning') : ''}</div>
+        <div class="li-sub">${item.code || ''}</div>
+      </div>
+      <span class="li-chevron">›</span>
+    `;
+    container.appendChild(div);
+  }
+  
+  screenStack.push(currentScreen);
+  showScreen('emergencies', false);
+}
+
+// === SEARCH ===
+// Common lay terms, abbreviations, and misspellings mapped to the clinical
+// keywords they should surface. Each key is checked as a substring of the
+// query, so "my sugar is high" still matches "sugar" -> diabetes.
+const SEARCH_SYNONYMS = {
+  'high bp': ['hypertension'], 'high blood pressure': ['hypertension'], 'bp high': ['hypertension'],
+  'sugar': ['diabetes'], 'blood sugar': ['diabetes'], 'high sugar': ['diabetes'],
+  'fits': ['seizures', 'epilepsy'], 'fitting': ['seizures', 'epilepsy'], 'convulsion': ['seizures', 'epilepsy'], 'convulsions': ['seizures', 'epilepsy'],
+  'preg malaria': ['malaria in pregnancy'], 'malaria pregnant': ['malaria in pregnancy'],
+  'heart attack': ['myocardial infarction', 'acute coronary'], 'mi': ['myocardial infarction'],
+  'stroke': ['cva', 'cerebrovascular'], 'brain attack': ['stroke'],
+  'allergic reaction': ['anaphylaxis'], 'severe allergy': ['anaphylaxis'],
+  'snake bite': ['snake bites envenomation'], 'poisoning': ['toxicity', 'poison'],
+  'difficulty breathing': ['asthma', 'respiratory'], 'cant breathe': ['asthma', 'respiratory'],
+  'passed out': ['shock', 'collapse'], 'fainting': ['shock', 'collapse'],
+  'high temperature': ['fever'], 'diarrhoea': ['diarrhea'], 'diarhea': ['diarrhea'],
+  'labour': ['labor'], 'child birth': ['delivery', 'labour'],
+  'sepsis': ['septic shock', 'infection'], 'overdose': ['toxicity', 'poisoning'],
+};
+function expandSynonyms(q) {
+  const extra = [];
+  for (const [term, targets] of Object.entries(SEARCH_SYNONYMS)) {
+    if (q.includes(term)) extra.push(...targets);
+  }
+  return extra;
+}
+function doSearch(query) {
+  const clearBtn = document.getElementById('searchClearBtn');
+  if (clearBtn) clearBtn.classList.toggle('visible', !!query);
+  
+  if (!query || query.length < 2) {
+    document.getElementById('searchResults').innerHTML = '';
+    renderSearchHistory();
+    return;
+  }
+  
+  const q = query.toLowerCase();
+
+  // Score each match so the most relevant results surface first, instead of
+  // whatever order they happen to sit in in the data file:
+  //   4 = title is an exact match
+  //   3 = title starts with the query
+  //   2 = query appears elsewhere in the title
+  //   1 = query only matches a keyword/synonym
+  const synonymTerms = expandSynonyms(q);
+  function scoreMatch(c) {
+    const title = c.title.toLowerCase();
+    if (title === q) return 4;
+    if (title.startsWith(q)) return 3;
+    if (title.includes(q)) return 2;
+    if (c.keywords && c.keywords.some(k => k.includes(q))) return 1;
+    // Synonym match: a bit below a direct keyword hit, but still surfaced —
+    // e.g. "sugar" -> "diabetes" or "fits" -> "seizures"/"epilepsy".
+    if (synonymTerms.some(term => title.includes(term))) return 1;
+    if (synonymTerms.some(term => c.keywords && c.keywords.some(k => k.includes(term)))) return 0.5;
+    return 0;
+  }
+
+  const results = DATA.conditions
+    .map(c => ({ c, score: scoreMatch(c) }))
+    .filter(r => r.score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      // Tie-break alphabetically so equally-relevant results are stable and scannable
+      return a.c.title.localeCompare(b.c.title);
+    })
+    .map(r => r.c)
+    .slice(0, 30);
+  
+  const container = document.getElementById('searchResults');
+  if (results.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">' + ic('file', '32px') + '</div><div class="es-text">No results for &ldquo;' + escapeHtml(query) + '&rdquo;.<br>Try searching by disease, drug, or abbreviation &mdash; or check the Drug Guide.</div></div>';
+    return;
+  }
+  
+  container.innerHTML = '<div class="section-header">Results (' + results.length + ')</div>';
+  for (const item of results) {
+    const sectionInfo = DATA.sections[item.section] || { icon: 'file', color: '#8A8574' };
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.onclick = () => {
+      addSearchHistory(query);
+      showDetail(item.id);
+    };
+    div.innerHTML = `
+      <span class="r-icon" style="background:${sectionInfo.color}1A;color:${sectionInfo.color};">${ic(sectionInfo.icon || 'file')}</span>
+      <div class="r-text">
+        <div class="r-title">${highlightMatch(item.title, q)}</div>
+        <div class="r-sub">${sectionInfo.name || ''} ${item.has_verification_issues ? ic('warning') : ''}</div>
+      </div>
+      <span class="r-chevron" style="color:var(--line-strong);">›</span>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function clearSearchInput() {
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  input.focus();
+  doSearch('');
+}
+
+function highlightMatch(text, query) {
+  if (!query) return text;
+  const idx = text.toLowerCase().indexOf(query);
+  if (idx === -1) return text;
+  return text.substring(0, idx) + '<strong>' + text.substring(idx, idx + query.length) + '</strong>' + text.substring(idx + query.length);
+}
+
+function renderSearchHistory() {
+  const container = document.getElementById('searchHistory');
+  if (!SEARCH_HISTORY.length) { container.innerHTML = ''; return; }
+  container.innerHTML = '<div class="section-header">Recent Searches</div>';
+  for (const q of SEARCH_HISTORY.slice(0, 10)) {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.onclick = () => { document.getElementById('searchInput').value = q; doSearch(q); };
+    div.innerHTML = '<span class="hi-icon">' + ic('clock') + '</span><span class="hi-text">' + escapeHtml(q) + '</span>';
+    container.appendChild(div);
+  }
+}
+
+function addSearchHistory(query) {
+  if (!query || query.length < 2) return;
+  SEARCH_HISTORY = [query, ...SEARCH_HISTORY.filter(q => q !== query)].slice(0, 20);
+  localStorage.setItem('zstg_search_history', JSON.stringify(SEARCH_HISTORY));
+  trackEvent('search', query);
+}
+
+function renderRecentSearches() {
+  const container = document.getElementById('recentSearchSection');
+  const list = document.getElementById('recentSearchList');
+  if (!SEARCH_HISTORY.length) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+  list.innerHTML = '';
+  for (const q of SEARCH_HISTORY.slice(0, 5)) {
+    const div = document.createElement('div');
+    div.className = 'history-item';
+    div.onclick = () => {
+      showScreen('search');
+      setTimeout(() => {
+        const input = document.getElementById('searchInput');
+        input.value = q;
+        doSearch(q);
+      }, 130);
+    };
+    div.innerHTML = '<span class="hi-icon">' + ic('clock') + '</span><span class="hi-text">' + escapeHtml(q) + '</span>';
+    list.appendChild(div);
+  }
+}
+
+// === DRUG GUIDE ===
+function showDrugGuide() {
+  renderDrugFilters();
+  renderDrugList();
+  screenStack.push(currentScreen);
+  showScreen('drugs', false);
+}
+
+function renderDrugFilters() {
+  const container = document.getElementById('drugFilters');
+  const categories = ['All', ...new Set(DATA.drug_index.map(item => item.category || 'Medicine'))];
+  container.innerHTML = '';
+  for (const category of categories) {
+    const button = document.createElement('button');
+    button.className = 'drug-filter-chip' + (category === DRUG_CATEGORY ? ' active' : '');
+    button.type = 'button';
+    button.textContent = category;
+    button.onclick = () => {
+      DRUG_CATEGORY = category;
+      renderDrugFilters();
+      renderDrugList(document.getElementById('drugSearchInput').value);
+    };
+    container.appendChild(button);
+  }
+}
+
+function renderDrugList(filter) {
+  const container = document.getElementById('drugList');
+  let items = [...DATA.drug_index].sort((a, b) => a.name.localeCompare(b.name));
+  if (DRUG_CATEGORY !== 'All') items = items.filter(item => (item.category || 'Medicine') === DRUG_CATEGORY);
+  if (filter) {
+    const q = filter.toLowerCase();
+    items = items.filter(d => d.name.toLowerCase().includes(q) || (d.aliases || []).some(alias => alias.toLowerCase().includes(q)));
+  }
+  
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">' + ic('pill', '32px') + '</div><div class="es-text">No medicines found for that search.</div></div>';
+    return;
+  }
+  
+  const scope = DRUG_CATEGORY === 'All' ? 'medicines and therapeutics' : DRUG_CATEGORY.toLowerCase();
+  container.innerHTML = '<div class="drug-guide-summary">' + items.length + ' ' + scope + '. Open an entry to see every audited source mention and its printed page.</div>';
+  let lastLetter = null;
+  for (const drug of items) {
+    const matchedAlias = filter && !drug.name.toLowerCase().includes(filter.toLowerCase())
+      ? (drug.aliases || []).find(alias => alias.toLowerCase().includes(filter.toLowerCase()))
+      : null;
+    // Alphabetical divider — lets a clinician browse A-Z at a glance, per the drug index request
+    const letter = drug.name.charAt(0).toUpperCase();
+    if (letter !== lastLetter) {
+      lastLetter = letter;
+      const divider = document.createElement('div');
+      divider.className = 'section-header';
+      divider.style.padding = '10px 16px 4px';
+      divider.textContent = letter;
+      container.appendChild(divider);
+    }
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.onclick = () => showDrugDetail(drug.name);
+    div.innerHTML = `
+      <span class="r-icon" style="background:var(--green-wash);color:var(--green);">${ic('pill')}</span>
+      <div class="r-text">
+        <div class="r-title">${filter ? highlightMatch(drug.name, filter) : drug.name}</div>
+        <div class="r-sub">${matchedAlias ? 'Alias: ' + sourceEscape(matchedAlias) + ' · ' : ''}${drug.category || 'Medicine'} · ${drug.count} topic${drug.count !== 1 ? 's' : ''} · ${drug.mention_count || drug.count} mention${(drug.mention_count || drug.count) !== 1 ? 's' : ''}</div>
+      </div>
+      <span class="r-chevron" style="color:var(--line-strong);">›</span>
+    `;
+    container.appendChild(div);
+  }
+}
+
+function searchDrugs(query) {
+  renderDrugList(query);
+}
+
+function showDrugDetail(drugName) {
+  const related = DATA.drugs.filter(d => d.name.toLowerCase() === drugName.toLowerCase());
+  const indexItem = DATA.drug_index.find(d => d.name.toLowerCase() === drugName.toLowerCase()) || {};
+  const container = document.getElementById('drugDetailContent');
+  
+  let html = '<div class="detail-header"><div class="detail-code">' + sourceEscape(indexItem.category || 'Medicine') + '</div><div class="detail-title">' + ic('pill') + ' ' + sourceEscape(drugName) + '</div>';
+  if (indexItem.aliases && indexItem.aliases.length) html += '<div class="drug-aliases">Also indexed as: ' + indexItem.aliases.map(sourceEscape).join(', ') + '</div>';
+  html += '</div>';
+  html += '<section class="source-assurance compact" aria-label="Source assurance"><div class="source-assurance-head"><span class="source-assurance-icon">' + ic('check') + '</span><div><div class="source-assurance-heading">Source assurance</div><div class="source-assurance-status">Final audited source excerpts</div></div></div><p class="source-assurance-summary">Every medicine mention is preserved from the audited guideline and links to its complete clinical topic and printed page.</p><div class="source-assurance-facts"><span class="source-assurance-fact">' + sourceEscape(indexItem.mention_count || related.length) + ' source mentions</span><span class="source-assurance-fact">Printed-page traceability</span></div></section>';
+
+  const grouped = new Map();
+  for (const mention of related) {
+    if (!grouped.has(mention.condition_id)) grouped.set(mention.condition_id, []);
+    grouped.get(mention.condition_id).push(mention);
+  }
+  for (const mentions of grouped.values()) {
+    mentions.sort((a, b) => (a.printed_page || 0) - (b.printed_page || 0));
+    const first = mentions[0];
+    html += '<section class="drug-condition-group"><div class="drug-condition-heading"><h3>' + sourceEscape(first.condition_title) + '</h3><span class="mention-count">' + mentions.length + '</span></div>';
+    for (const mention of mentions) {
+      html += '<div class="drug-mention-card" role="button" tabindex="0" onclick="openDrugSource(\'' + mention.condition_id + '\',' + Number(mention.printed_page || 0) + ')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click();}">';
+      html += '<div class="drug-mention-meta">Printed page ' + sourceEscape(mention.printed_page) + '</div>';
+      html += '<div class="drug-mention-context">' + sourceEscape(mention.context) + '</div>';
+      html += '<div class="drug-mention-link">Open complete topic →</div></div>';
+    }
+    html += '</section>';
+  }
+  
+  container.innerHTML = html;
+  
+  screenStack.push(currentScreen);
+  showScreen('drug-detail', false);
+  document.getElementById('headerTitle').textContent = drugName;
+  trackEvent('drug', drugName);
+}
+
+function openDrugSource(conditionId, printedPage) {
+  showDetail(conditionId);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const target = document.getElementById('source-page-' + printedPage);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+}
+
+// === DISEASE DETAIL ===
+function showDetail(conditionId, navigate = true) {
+  const item = DATA.conditions.find(c => c.id === conditionId);
+  if (!item) return;
+  currentDetailId = conditionId;
+  
+  const data = item.data;
+  const sectionInfo = DATA.sections[item.section] || {};
+  const container = document.getElementById('detailContent');
+  
+  let html = '';
+  
+  // Header
+  html += '<div class="detail-header">';
+  html += '<div class="detail-title">' + (sectionInfo.icon ? ic(sectionInfo.icon) + ' ' : '') + item.title + '</div>';
+  if (item.code) html += '<div class="detail-code">Section ' + item.code + '</div>';
+  const detailLabel = item.type === 'audited guideline topic' ? 'Audited source' : item.type;
+  html += '<div class="detail-type">' + detailLabel + ' · ' + (sectionInfo.name || '') + '</div>';
+  html += '</div>';
+  html += renderSourceAssurance(item);
+  
+  // Verification warning
+  if (item.has_verification_issues) {
+    html += '<div class="verification-warning">';
+    html += '<span class="vw-icon">' + ic('warning') + '</span>';
+    html += '<div class="vw-text">This entry has not been fully verified against the printed guideline. Verify critical details before clinical use.' + 
+      (item.verification_note ? '<br><br><strong>Note:</strong> ' + item.verification_note : '') + '</div>';
+    html += '</div>';
+  }
+
+  // Consolidated audited files retain the printed guideline as ordered source
+  // blocks. Render those blocks directly so tables, figures and page boundaries
+  // are not lost during conversion to the app.
+  if (data.source_content && Array.isArray(data.source_content)) {
+    html += renderAuditedContent(data.source_content);
+  }
+  
+  // Red flags
+  if (data.red_flags && data.red_flags.length) {
+    html += '<div class="red-flags-section"><div class="rf-title">' + ic('warning') + ' Red Flags</div>';
+    for (const flag of data.red_flags) {
+      html += '<div class="rf-item">' + flag + '</div>';
+    }
+    html += '</div>';
+  }
+  
+  // Definition
+  if (data.definition) {
+    html += '<div class="detail-section"><h3>Definition</h3><p>' + data.definition + '</p></div>';
+  }
+  
+  // Triggers
+  if (data.triggers && data.triggers.length) {
+    html += '<div class="detail-section"><h3>Triggers</h3><ul>';
+    for (const t of data.triggers) html += '<li>' + t + '</li>';
+    html += '</ul></div>';
+  }
+  
+  // General approach
+  if (data.general_approach && data.general_approach.length) {
+    html += '<div class="detail-section"><h3>General Approach</h3><ul>';
+    for (const g of data.general_approach) html += '<li>' + (typeof g === 'string' ? g : JSON.stringify(g)) + '</li>';
+    html += '</ul></div>';
+  }
+  
+  // Diagnostic criteria
+  if (data.diagnostic_criteria) {
+    html += '<div class="detail-section"><h3>Diagnostic Criteria</h3>';
+    if (Array.isArray(data.diagnostic_criteria)) {
+      for (const crit of data.diagnostic_criteria) {
+        if (typeof crit === 'object' && crit.criterion) {
+          html += '<div class="mgmt-step"><div class="step-action"><strong>Criterion ' + crit.criterion + ':</strong> ' + crit.description + '</div>';
+          if (crit.plus_any_one_of && crit.plus_any_one_of.length) {
+            html += '<div class="step-notes" style="margin-top:4px;">Plus any ONE of:</div><ul style="margin-top:4px;">';
+            for (const p of crit.plus_any_one_of) html += '<li>' + p + '</li>';
+            html += '</ul>';
+          }
+          html += '</div>';
+        } else {
+          html += '<p>' + (typeof crit === 'string' ? crit : JSON.stringify(crit)) + '</p>';
+        }
+      }
+    } else if (typeof data.diagnostic_criteria === 'string') {
+      html += '<p>' + data.diagnostic_criteria + '</p>';
+    } else if (typeof data.diagnostic_criteria === 'object') {
+      html += '<ul>';
+      for (const v of Object.values(data.diagnostic_criteria)) {
+        if (typeof v === 'string') html += '<li>' + v + '</li>';
+      }
+      html += '</ul>';
+    }
+    html += '</div>';
+  }
+  
+  // Signs and symptoms
+  if (data.signs_and_symptoms && data.signs_and_symptoms.length) {
+    html += '<div class="detail-section"><h3>Signs & Symptoms</h3><ul>';
+    for (const s of data.signs_and_symptoms) {
+      html += '<li>' + (typeof s === 'string' ? s : JSON.stringify(s)) + '</li>';
+    }
+    html += '</ul></div>';
+  }
+  
+  // Investigations
+  if (data.investigations) {
+    html += '<div class="detail-section"><h3>Investigations</h3>';
+    if (Array.isArray(data.investigations)) {
+      html += '<ul>';
+      for (const inv of data.investigations) {
+        html += '<li>' + (typeof inv === 'string' ? inv : JSON.stringify(inv)) + '</li>';
+      }
+      html += '</ul>';
+    } else if (typeof data.investigations === 'object') {
+      html += '<ul>';
+      const invs = data.investigations.tests || data.investigations;
+      if (Array.isArray(invs)) for (const inv of invs) html += '<li>' + inv + '</li>';
+      if (data.investigations.notes) html += '<div class="step-notes">' + data.investigations.notes + '</div>';
+      html += '</ul>';
+    }
+    html += '</div>';
+  }
+  
+  // Subtypes (e.g. types_of_shock, presentation_types) — rendered whenever
+  // present, independent of whether a top-level management_steps array
+  // also exists, since some conditions only carry steps nested per type.
+  const typeKeys = Object.keys(data).filter(k => (k.startsWith('types_of') || k.endsWith('_types')) && Array.isArray(data[k]));
+  if (typeKeys.length) {
+    for (const tk of typeKeys) {
+      html += '<div class="detail-section"><h3>Types</h3>';
+      for (const type of data[tk]) {
+        html += '<div class="phase-group">';
+        html += '<div class="phase-title">' + (type.type || type.name || 'Type') + '</div>';
+        if (type.cause || type.description) html += '<div class="phase-step"><em>' + (type.cause || type.description) + '</em></div>';
+        if (type.signs_and_symptoms) {
+          html += '<div class="phase-step"><strong>Signs:</strong> ' + type.signs_and_symptoms.join(', ') + '</div>';
+        }
+        if (type.investigations) {
+          html += '<div class="phase-step"><strong>Investigations:</strong> ' + type.investigations.join(', ') + '</div>';
+        }
+        if (type.management_steps) {
+          html += '<div class="phase-step" style="font-weight:700;background:var(--green-wash);color:var(--green);">Management</div>';
+          for (const step of type.management_steps) {
+            html += '<div class="phase-step">' + (step.order ? '<strong>Step ' + step.order + ':</strong> ' : '') + (step.action || step) + 
+              (step.dose ? ' — <strong>' + step.dose + '</strong>' : '') + 
+              (step.timing ? ' <em>(' + step.timing + ')</em>' : '') +
+              (step.notes ? ' <em>(' + step.notes + ')</em>' : '') + '</div>';
+          }
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+  }
+  
+  // Management steps (linear)
+  if (data.management_steps && Array.isArray(data.management_steps)) {
+    // Check if it uses phases pattern
+    if (data.management_steps[0] && data.management_steps[0].phase) {
+      html += '<div class="detail-section"><h3>Management</h3>';
+      for (const phase of data.management_steps) {
+        html += '<div class="phase-group">';
+        html += '<div class="phase-title">' + (phase.phase || 'Phase') + (phase.code ? ' (' + phase.code + ')' : '') + '</div>';
+        if (phase.steps) {
+          for (const step of phase.steps) {
+            html += '<div class="phase-step">' + (typeof step === 'string' ? step : (step.action || step)) + 
+              (step.dose ? ' — <strong>' + step.dose + '</strong>' : '') + 
+              (step.notes ? ' <em>(' + step.notes + ')</em>' : '') + '</div>';
+          }
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    } else if (!typeKeys.length) {
+        html += '<div class="detail-section"><h3>Management Steps</h3>';
+        for (const step of data.management_steps) {
+          html += '<div class="mgmt-step">';
+          if (step.order) html += '<div class="step-order">Step ' + step.order + '</div>';
+          html += '<div class="step-action">' + (step.action || step) + '</div>';
+          if (step.dose) {
+            if (typeof step.dose === 'object' && !Array.isArray(step.dose)) {
+              html += '<div class="drug-options" style="margin-top:6px;">';
+              for (const [key, val] of Object.entries(step.dose)) {
+                html += '<div class="drug-option"><span class="do-name">' + key.replace(/_/g, ' ') + ':</span> <span class="do-dose">' + val + '</span></div>';
+              }
+              html += '</div>';
+            } else {
+              html += '<div class="step-dose">Dose: ' + step.dose + '</div>';
+            }
+          }
+          if (step.notes) html += '<div class="step-notes">' + step.notes + '</div>';
+          
+          // Drug options
+          if (step.options && step.options.length) {
+            html += '<div class="drug-options">';
+            for (const opt of step.options) {
+              html += '<div class="drug-option"><span class="do-name">' + (opt.drug || '') + '</span>';
+              if (opt.dose) {
+                if (typeof opt.dose === 'object' && !Array.isArray(opt.dose)) {
+                  html += ':';
+                  for (const [k, v] of Object.entries(opt.dose)) {
+                    html += '<div style="padding-left:12px;font-size:calc(12px * var(--tsize-mult));color:var(--text-secondary);">' + k.replace(/_/g, ' ') + ': ' + v + '</div>';
+                  }
+                } else {
+                  html += ': <span class="do-dose">' + opt.dose + '</span>';
+                }
+              }
+              if (opt.doses && typeof opt.doses === 'object') {
+                html += ':';
+                for (const [k, v] of Object.entries(opt.doses)) {
+                  html += '<div style="padding-left:12px;font-size:calc(12px * var(--tsize-mult));color:var(--text-secondary);">' + k.replace(/_/g, ' ') + ': ' + v + '</div>';
+                }
+              }
+              html += '</div>';
+            }
+            html += '</div>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+  }
+  
+// Management phases (protocols)
+  if (data.management_phases) {
+    html += '<div class="detail-section"><h3>Management Phases</h3>';
+    for (const phase of data.management_phases) {
+      html += '<div class="phase-group">';
+      html += '<div class="phase-title">' + (phase.phase || 'Phase') + '</div>';
+      
+      // Phase-level metadata
+      if (phase.estimated_deficit) html += '<div class="phase-step"><strong>Estimated deficit:</strong> ' + phase.estimated_deficit + '</div>';
+      if (phase.fluid_of_choice) html += '<div class="phase-step"><strong>Fluid of choice:</strong> ' + phase.fluid_of_choice + '</div>';
+      if (phase.target_urine_output) html += '<div class="phase-step"><strong>Target urine output:</strong> ' + phase.target_urine_output + '</div>';
+      if (phase.endpoint) html += '<div class="phase-step"><strong>Endpoint:</strong> ' + phase.endpoint + '</div>';
+      if (phase.cautions) html += '<div class="phase-step" style="background:var(--gold-wash);border-left:3px solid var(--gold);"><strong>Caution:</strong> ' + phase.cautions + '</div>';
+      if (phase.notes) html += '<div class="phase-step"><em>' + phase.notes + '</em></div>';
+      
+      // Treatment regimen (step-based)
+      if (phase.regimen) {
+        html += '<div class="phase-step" style="font-weight:700;background:var(--green-wash);color:var(--green);">Treatment Regimen</div>';
+        for (const r of phase.regimen) {
+          html += '<div class="phase-step">' + (r.step ? '<strong>Step ' + r.step + ':</strong> ' : '') + (r.instruction || r.action || '') + 
+            (r.dose ? ' — <strong>' + r.dose + '</strong>' : '') + 
+            (r.notes ? ' <em>(' + r.notes + ')</em>' : '') + '</div>';
+        }
+      }
+      
+      // Steps array
+      if (phase.steps && Array.isArray(phase.steps)) {
+        for (const step of phase.steps) {
+          if (typeof step === 'string') {
+            html += '<div class="phase-step">' + step + '</div>';
+          } else {
+            // Handle various action field names: action, instruction
+            const actionText = step.action || step.instruction || step;
+            const actionStr = typeof actionText === 'string' ? actionText : '';
+            html += '<div class="phase-step">' + actionStr + 
+              (step.dose ? ' — <strong>' + step.dose + '</strong>' : '') + 
+              (step.condition ? ' <em>(' + step.condition + ')</em>' : '') +
+              (step.timing ? ' <em>(' + step.timing + ')</em>' : '') +
+              (step.notes ? ' <em>(' + step.notes + ')</em>' : '') + '</div>';
+            if (step.target_range) html += '<div class="phase-step" style="padding-left:24px;">Target: ' + step.target_range + '</div>';
+            if (step.options && step.options.length) {
+              for (const opt of step.options) {
+                html += '<div class="drug-option" style="margin-left:16px;margin-bottom:4px;"><span class="do-name">' + (opt.drug || '') + '</span>' + 
+                  (opt.dose ? ': <span class="do-dose">' + (typeof opt.dose === 'string' ? opt.dose : JSON.stringify(opt.dose)) + '</span>' : '') + '</div>';
+              }
+            }
+          }
+        }
+      }
+      
+      // Cross-references in phase
+      if (phase.cross_reference) {
+        html += '<div class="phase-step" style="background:var(--paper);border-left:3px solid var(--ink-soft);"><strong>See:</strong> ' + phase.cross_reference + '</div>';
+      }
+      
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  
+  // Algorithm (flowchart data)
+  if (data.nodes && Array.isArray(data.nodes)) {
+    html += '<div class="detail-section"><h3>Algorithm Flowchart</h3><div class="algorithm-flow">';
+    for (const node of data.nodes) {
+      html += '<div class="algo-node ' + node.type + '">';
+      html += '<strong>' + node.id + ':</strong> ' + node.text;
+      if (node.next && node.next.length) html += '<span class="algo-arrow">↓ ' + node.next.join(', ') + '</span>';
+      html += '</div>';
+    }
+    html += '</div></div>';
+  }
+  
+  // Risk scoring tools
+  if (data.risk_scoring_tools && data.risk_scoring_tools.length) {
+    html += '<div class="detail-section"><h3>Risk Scoring</h3>';
+    for (const tool of data.risk_scoring_tools) {
+      if (tool.name) html += '<p style="font-weight:600;margin-bottom:8px;">' + tool.name + '</p>';
+      if (tool.purpose) html += '<p style="font-size:calc(13px * var(--tsize-mult));margin-bottom:8px;">' + tool.purpose + '</p>';
+      if (tool.parameters && tool.parameters.length) {
+        html += '<table class="risk-table"><thead><tr><th>Parameter</th><th>Finding</th><th>Score</th></tr></thead><tbody>';
+        for (const param of tool.parameters) {
+          if (param.findings) {
+            for (const f of param.findings) {
+              html += '<tr><td>' + param.parameter + '</td><td>' + f.finding + '</td><td><strong>' + f.score + '</strong></td></tr>';
+            }
+          }
+        }
+        html += '</tbody></table>';
+      }
+    }
+    html += '</div>';
+  }
+  
+  // Complications
+  if (data.complications && data.complications.length) {
+    html += '<div class="detail-section"><h3>Complications</h3><ul>';
+    for (const c of data.complications) html += '<li>' + c + '</li>';
+    html += '</ul></div>';
+  }
+  
+  // Referral criteria
+  if (data.referral_criteria) {
+    html += '<div class="detail-section"><h3>Referral Criteria</h3><ul>';
+    const rc = Array.isArray(data.referral_criteria) ? data.referral_criteria : [data.referral_criteria];
+    for (const r of rc) html += '<li>' + r + '</li>';
+    html += '</ul></div>';
+  }
+  
+  // Top-level clinical pearls
+  if (data.clinical_pearls && data.clinical_pearls.length) {
+    html += '<div style="background:var(--gold-wash);border:1px solid var(--gold);border-radius:6px;padding:12px;margin:12px 0;font-size:calc(13px * var(--tsize-mult));"><strong>' + ic('bulb') + ' Clinical Pearls</strong><br>';
+    for (const p of data.clinical_pearls) html += '• ' + p + '<br>';
+    html += '</div>';
+  }
+  
+  // Top-level notes (plain string)
+  if (data.notes && typeof data.notes === 'string') {
+    html += '<div class="detail-section"><h3>Notes</h3><p>' + data.notes + '</p></div>';
+  }
+  
+  // Procedure
+  if (data.procedure) {
+    html += '<div class="detail-section"><h3>Procedure: ' + (data.procedure.name || '') + '</h3>';
+    if (data.procedure.steps) {
+      html += '<ol style="padding-left:24px;">';
+      for (const s of data.procedure.steps) html += '<li style="padding:4px 0;">' + s + '</li>';
+      html += '</ol>';
+    }
+    if (data.procedure.clinical_pearls) {
+      html += '<div style="background:var(--gold-wash);border:1px solid var(--gold);border-radius:6px;padding:12px;margin-top:8px;font-size:calc(13px * var(--tsize-mult));"><strong>' + ic('bulb') + ' Clinical Pearls</strong><br>';
+      for (const p of data.procedure.clinical_pearls) html += '• ' + p + '<br>';
+      html += '</div>';
+    }
+    html += '</div>';
+  }
+  
+  // Cross references
+  const refs = DATA.cross_references[item.id] || [];
+  if (refs.length) {
+    html += '<div class="detail-section"><h3>Related Conditions</h3><div class="cross-refs">';
+    for (const refId of refs) {
+      const refItem = DATA.conditions.find(c => c.id === refId);
+      if (refItem) {
+        html += '<button class="cross-ref" onclick="showDetail(\'' + refId + '\')">' + refItem.title + '</button>';
+      }
+    }
+    html += '</div></div>';
+  }
+  
+  // Bookmark button
+  const isBookmarked = BOOKMARKS.includes(item.id);
+  html += '<div style="text-align:center;padding:16px 0 32px;">';
+  html += '<button class="cross-ref" onclick="toggleBookmark(\'' + item.id + '\')" style="font-size:calc(14px * var(--tsize-mult));padding:8px 20px;background:' + (isBookmarked ? 'var(--red-wash)' : 'var(--green-wash)') + ';border-color:' + (isBookmarked ? 'var(--red)' : 'var(--green)') + ';color:' + (isBookmarked ? 'var(--red)' : 'var(--green)') + ';">';
+  html += (isBookmarked ? ic('bookmark-filled') + ' Remove Bookmark' : ic('bookmark') + ' Add Bookmark');
+  html += '</button></div>';
+  
+  // Source info
+  if (data.source) {
+    html += '<div style="font-size:calc(11px * var(--tsize-mult));color:var(--ink-soft);padding:8px 0 16px;border-top:1px solid var(--line);">';
+    html += 'Source: ' + data.source.document + '<br>';
+    if (data.source.pdf_pages) html += 'PDF pages: ' + data.source.pdf_pages.join(', ');
+    if (data.source.printed_page) html += ' · Printed pages: ' + (Array.isArray(data.source.printed_page) ? data.source.printed_page.join(', ') : data.source.printed_page);
+    html += '</div>';
+  }
+  
+  container.innerHTML = html;
+  enhanceDetailSections(container);
+  enhanceAuditedHeadings(container);
+  enhanceSourceTables(container);
+  linkifyDataReferences(container);
+  buildTopicNavigation(container);
+  
+  if (navigate) {
+    screenStack.push(currentScreen);
+    showScreen('detail', false);
+    document.getElementById('headerTitle').textContent = item.title;
+    trackEvent('condition', item.title);
+  }
+}
+
+function sourceEscape(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// Index every "Table N" / "Figure N" that actually exists in the audited
+// source, across all topics, so inline mentions like "see Table 81" can be
+// turned into buttons that jump straight to that table — even when it lives
+// in a different topic. Built once when DATA loads.
+function buildDataReferenceIndex() {
+  const index = { table: new Map(), figure: new Map() };
+  for (const condition of DATA.conditions || []) {
+    for (const page of (condition.data && condition.data.source_content) || []) {
+      for (const block of page.blocks || []) {
+        if (['table', 'table_continuation', 'comparison', 'table_reference'].includes(block.type)) {
+          const match = block.title && String(block.title).match(/Table\s+(\d+)/i);
+          if (match && !index.table.has(match[1])) index.table.set(match[1], condition.id);
+        }
+        if (['figure', 'figure_table'].includes(block.type)) {
+          const match = block.title && String(block.title).match(/Figure\s+(\d+)/i);
+          const num = match ? match[1] : (block.figure_number ? String(block.figure_number) : null);
+          if (num && !index.figure.has(num)) index.figure.set(num, condition.id);
+        }
+      }
+    }
+  }
+  DATA_REF_INDEX = index;
+}
+
+// Claims a DOM id for a table/figure anchor, once per render pass, so a
+// table split across continuation blocks doesn't produce duplicate ids.
+function claimRefId(prefix, num) {
+  if (!num) return '';
+  const id = prefix + '-' + num;
+  if (RENDER_ID_SEEN.has(id)) return '';
+  RENDER_ID_SEEN.add(id);
+  return id;
+}
+
+// Turns "Table 81" / "Figure 13" mentions in rendered text into buttons that
+// jump to that table/figure, in this topic or another one, when it actually
+// exists in the audited data. Left as plain text otherwise.
+function linkifyDataReferences(container) {
+  if (!DATA_REF_INDEX || (!DATA_REF_INDEX.table.size && !DATA_REF_INDEX.figure.size)) return;
+  const pattern = /\b(Table|Figure)\s+(\d+)\b/g;
+  const skipAncestor = 'caption, figcaption, h3, h4, .data-ref-link, .source-table-toolbar';
+  const textNodes = [];
+  const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (!node.nodeValue || !/\b(Table|Figure)\s+\d+\b/.test(node.nodeValue)) continue;
+    if (node.parentElement && node.parentElement.closest(skipAncestor)) continue;
+    textNodes.push(node);
+  }
+  for (const textNode of textNodes) {
+    const text = textNode.nodeValue;
+    pattern.lastIndex = 0;
+    let match;
+    let lastIndex = 0;
+    const fragment = document.createDocumentFragment();
+    let matched = false;
+    while ((match = pattern.exec(text))) {
+      const kind = match[1].toLowerCase();
+      const num = match[2];
+      const targetId = DATA_REF_INDEX[kind] && DATA_REF_INDEX[kind].get(num);
+      if (!targetId) continue;
+      matched = true;
+      fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'data-ref-link';
+      button.textContent = match[0];
+      button.addEventListener('click', () => jumpToDataReference(kind, num, targetId));
+      fragment.appendChild(button);
+      lastIndex = match.index + match[0].length;
+    }
+    if (!matched) continue;
+    fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+    textNode.replaceWith(fragment);
+  }
+}
+
+function jumpToDataReference(kind, num, targetConditionId) {
+  const elementId = kind + '-' + num;
+  const scrollToAnchor = () => {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const previousBg = el.style.backgroundColor;
+    const previousTransition = el.style.transition;
+    el.style.transition = 'background-color 0.3s ease';
+    el.style.backgroundColor = 'var(--green-wash)';
+    setTimeout(() => { el.style.backgroundColor = previousBg; el.style.transition = previousTransition; }, 1200);
+  };
+  if (currentScreen === 'detail' && currentDetailId === targetConditionId) {
+    scrollToAnchor();
+    return;
+  }
+  showDetail(targetConditionId);
+  requestAnimationFrame(() => requestAnimationFrame(scrollToAnchor));
+}
+
+function sourcePageSummary(source) {
+  const rawPages = source && source.printed_page;
+  const pages = (Array.isArray(rawPages) ? rawPages : [rawPages]).filter(page => page !== undefined && page !== null && page !== '');
+  if (!pages.length) return 'Printed page recorded';
+  if (pages.length === 1) return 'Printed p. ' + pages[0];
+  const numeric = pages.map(Number);
+  const consecutive = numeric.every((page, index) => Number.isFinite(page) && (index === 0 || page === numeric[index - 1] + 1));
+  return consecutive ? 'Printed pp. ' + pages[0] + '–' + pages[pages.length - 1] : 'Printed pp. ' + pages.join(', ');
+}
+
+function renderSourceAssurance(item) {
+  const source = (item.data && item.data.source) || {};
+  const auditPassed = typeof source.audit_status === 'string' && source.audit_status.includes('PASSED');
+  const assured = item.verification_status === 'final_audited_source' && auditPassed && !item.has_verification_issues;
+  const documentName = (DATA.meta && DATA.meta.document) || source.document || 'Zambia Standard Treatment Guidelines';
+  const status = assured ? 'Final audited source' : 'Source verification required';
+  const summary = assured
+    ? 'Checked against ' + documentName + '. Guideline wording is preserved as printed.'
+    : 'This entry needs verification against the official printed guideline before clinical use.';
+  const pageSummary = sourcePageSummary(source);
+  return '<details class="source-assurance topic-assurance' + (assured ? '' : ' needs-review') + '">' +
+    '<summary class="source-assurance-toggle"><span class="source-assurance-icon">' + ic(assured ? 'shield-check' : 'warning') + '</span><span class="source-assurance-label"><strong>Source assurance</strong><span>' + status + '</span></span><span class="source-assurance-page">' + sourceEscape(pageSummary) + '</span><span class="source-assurance-expand">' + ic('chevron') + '</span></summary>' +
+    '<div class="source-assurance-details"><p class="source-assurance-description">' + sourceEscape(summary) + '</p>' +
+    '<div class="source-assurance-facts"><span class="source-assurance-fact">' + sourceEscape(pageSummary) + '</span><span class="source-assurance-fact">' + (auditPassed ? 'Audit passed' : 'Audit pending') + '</span><span class="source-assurance-fact">Source-linked content</span></div>' +
+    '<p class="source-assurance-note">Source assurance confirms faithful transcription; it does not replace clinical judgement or local protocols.</p></div></details>';
+}
+
+function sourceTableFrame(tableHtml, title) {
+  const numberMatch = title && String(title).match(/Table\s+(\d+)/i);
+  const id = numberMatch ? claimRefId('table', numberMatch[1]) : '';
+  return '<div class="source-table-component"' + (id ? ' id="' + id + '"' : '') + ' data-table-view="auto"><div class="source-table-toolbar"><span class="source-table-toolbar-label">Table view</span><div class="table-view-switch" role="group" aria-label="View options for ' + sourceEscape(title || 'clinical table') + '"><button type="button" class="table-view-button" data-view="cards">Cards</button><button type="button" class="table-view-button" data-view="table">Table</button></div></div><div class="source-table-wrap">' + tableHtml + '</div></div>';
+}
+
+function setSourceTableView(button, view) {
+  const component = button.closest('.source-table-component');
+  if (!component) return;
+  component.classList.toggle('view-cards', view === 'cards');
+  component.classList.toggle('view-table', view === 'table');
+  component.dataset.tableView = view;
+  component.querySelectorAll('.table-view-button').forEach(option => option.setAttribute('aria-pressed', String(option.dataset.view === view)));
+}
+
+function enhanceSourceTables(container) {
+  const defaultView = window.matchMedia && window.matchMedia('(max-width: 720px)').matches ? 'cards' : 'table';
+  container.querySelectorAll('.source-table-component').forEach(component => {
+    component.querySelectorAll('.table-view-button').forEach(button => button.addEventListener('click', () => setSourceTableView(button, button.dataset.view)));
+    const initialButton = component.querySelector('.table-view-button[data-view="' + defaultView + '"]');
+    if (initialButton) setSourceTableView(initialButton, defaultView);
+  });
+}
+
+function sourceValue(value) {
+  if (value == null || value === '') return '';
+  if (Array.isArray(value)) {
+    return '<ul>' + value.map(item => '<li>' + sourceValue(item) + '</li>').join('') + '</ul>';
+  }
+  if (typeof value === 'object') {
+    return Object.entries(value).map(([key, item]) =>
+      '<div class="source-kv"><span class="source-kv-label">' + sourceEscape(key.replace(/_/g, ' ')) + ':</span> ' + sourceValue(item) + '</div>'
+    ).join('');
+  }
+  return sourceEscape(value);
+}
+
+function sourceList(items, ordered = false) {
+  const tag = ordered ? 'ol' : 'ul';
+  return '<' + tag + '>' + (items || []).map(item => '<li>' + sourceValue(item) + '</li>').join('') + '</' + tag + '>';
+}
+
+function sourceTable(block) {
+  // Normalise the audited source's specialised table shapes into the same
+  // accessible table/card component used by ordinary rows.
+  if (Array.isArray(block.grid) && block.grid.length) {
+    const [header, ...body] = block.grid;
+    const columns = Array.isArray(header) ? header : [];
+    const rows = body.map(row => Object.fromEntries(columns.map((column, index) => [column, row[index]])));
+    return sourceTable({ title: block.title, columns, rows });
+  }
+  if (Array.isArray(block.domains)) {
+    return block.domains.map((domain, index) => {
+      let html = '';
+      if (domain.items) {
+        html += sourceTable({ title: (index === 0 ? block.title + ' — ' : '') + domain.domain, columns: ['Response', 'Score'], rows: domain.items.map(item => ({ Response: item.response, Score: item.score })) });
+      }
+      if (domain.older_children) {
+        html += sourceTable({ title: (index === 0 ? block.title + ' — ' : '') + domain.domain + ': older children', columns: ['Response', 'Score'], rows: domain.older_children.map(item => ({ Response: item.response, Score: item.score })) });
+      }
+      if (domain.infants_and_young_children) {
+        html += sourceTable({ title: domain.domain + ': infants and young children', columns: ['Response', 'Score'], rows: domain.infants_and_young_children.map(item => ({ Response: item.response, Score: item.score })) });
+      }
+      return html;
+    }).join('');
+  }
+  if (block.eye_opening || block.motor_response) {
+    return ['eye_opening', 'motor_response'].filter(key => block[key]).map((key, index) => {
+      const part = block[key];
+      return sourceTable({ title: (index === 0 ? block.title + ' — ' : '') + (part.source_section_label || key.replace(/_/g, ' ')), columns: part.headers, rows: part.rows });
+    }).join('');
+  }
+  if (block.mechanism_row && block.possible_causes) {
+    const shockTypes = Array.isArray(block.columns) ? block.columns : Object.keys(block.mechanism_row);
+    return sourceTable({
+      title: block.title,
+      columns: ['Type', 'Mechanism', block.possible_causes_label || 'Possible causes'],
+      rows: shockTypes.map(type => ({ Type: type, Mechanism: block.mechanism_row[type], [block.possible_causes_label || 'Possible causes']: block.possible_causes[type] }))
+    });
+  }
+  if (block.clinical_features || block.management) {
+    return sourceTable({
+      title: block.title || block.continuation_of || block.severity_header || 'Clinical guidance',
+      columns: ['Clinical features', 'Management'],
+      rows: [{ 'Clinical features': block.clinical_features || [], Management: block.management || [] }]
+    });
+  }
+  if (block.major_criteria || block.minor_criteria) {
+    return sourceTable({ title: block.title, columns: ['Major criteria', 'Minor criteria'], rows: [{ 'Major criteria': block.major_criteria, 'Minor criteria': block.minor_criteria }] });
+  }
+  if (Array.isArray(block.groups) && block.groups.some(group => Array.isArray(group.rows))) {
+    const columns = ['Category', ...(block.columns || [])];
+    const rows = block.groups.flatMap(group => (group.rows || []).map(row => ({ Category: group.source_group_header || group.group || '', ...row })));
+    return sourceTable({ title: block.title, columns, rows });
+  }
+  if (Array.isArray(block.groups)) {
+    const rows = [];
+    for (const group of block.groups) {
+      for (const subgroup of group.subgroups || []) rows.push({ Category: group.group, Cause: subgroup.label, Examples: subgroup.examples });
+      if (group.cause_items) rows.push({ Category: group.group, Cause: group.cause_items, Examples: group.examples_cell });
+    }
+    if (rows.length) return sourceTable({ title: block.title, columns: ['Category', 'Cause', 'Examples'], rows });
+  }
+  if (Array.isArray(block.sections)) {
+    const columns = block.columns || [];
+    const rows = [];
+    for (const section of block.sections) {
+      for (const row of section.rows || []) {
+        const normalizedRow = Array.isArray(row) ? Object.fromEntries(columns.map((column, index) => [column, row[index]])) : row;
+        rows.push({ Section: section.source_section_row || section.source_header_row?.[0] || '', ...normalizedRow });
+      }
+    }
+    if (rows.length) return sourceTable({ title: block.title || block.source_context, columns: ['Section', ...columns], rows });
+  }
+  if (block.column_lists && typeof block.column_lists === 'object') {
+    const columnNames = Array.isArray(block.columns) && block.columns.length ? block.columns : Object.keys(block.column_lists);
+    const lists = columnNames.map(name => {
+      const direct = block.column_lists[name];
+      if (Array.isArray(direct)) return direct;
+      const normalizedName = Object.keys(block.column_lists).find(key => sourceEscape(key).toLowerCase() === sourceEscape(name).toLowerCase());
+      return Array.isArray(block.column_lists[normalizedName]) ? block.column_lists[normalizedName] : [];
+    });
+    const rowCount = Math.max(0, ...lists.map(list => list.length));
+    let html = '<table class="source-table">';
+    if (block.title) html += '<caption>' + sourceEscape(block.title) + '</caption>';
+    html += '<thead><tr>' + columnNames.map(name => '<th>' + sourceEscape(name) + '</th>').join('') + '</tr></thead><tbody>';
+    for (let row = 0; row < rowCount; row++) {
+      html += '<tr>' + lists.map((list, column) => '<td data-label="' + sourceEscape(columnNames[column]) + '">' + sourceValue(list[row]) + '</td>').join('') + '</tr>';
+    }
+    return sourceTableFrame(html + '</tbody></table>', block.title);
+  }
+  const rows = Array.isArray(block.rows) ? block.rows : [];
+  let columns = Array.isArray(block.columns) ? block.columns.slice() : [];
+  if (!columns.length && rows.length && typeof rows[0] === 'object') {
+    columns = [...new Set(rows.flatMap(row => Object.keys(row)))];
+  }
+  if (!columns.length || !rows.length) {
+    const remainder = Object.fromEntries(Object.entries(block).filter(([key]) => !['type', 'title', 'source_image_base64'].includes(key)));
+    return '<div class="source-block">' + (block.title ? '<h4>' + sourceEscape(block.title) + '</h4>' : '') + sourceValue(remainder) + '</div>';
+  }
+  let html = '<table class="source-table">';
+  if (block.title || block.display_title) html += '<caption>' + sourceEscape(block.display_title || block.title) + '</caption>';
+  html += '<thead><tr>' + columns.map(column => '<th>' + sourceEscape(column) + '</th>').join('') + '</tr></thead><tbody>';
+  for (const row of rows) {
+    html += '<tr>' + columns.map(column => '<td data-label="' + sourceEscape(column) + '">' + sourceValue(typeof row === 'object' ? row[column] : row) + '</td>').join('') + '</tr>';
+  }
+  html = sourceTableFrame(html + '</tbody></table>', block.display_title || block.title);
+  if (Array.isArray(block.secondary_rows) && block.secondary_rows.length) {
+    html += sourceTable({ title: block.secondary_title || '', columns: block.secondary_columns || columns, rows: block.secondary_rows });
+  }
+  const hiddenMetadata = new Set(['layout', 'rendering_note', 'semantic_relationship', 'internal_columns', 'header_groups', 'group_header_span_columns', 'super_header_span_columns', 'regimen_grouping_note', 'continues_on_pdf_page', 'continuation_of', 'secondary_columns', 'secondary_rows']);
+  const extras = Object.fromEntries(Object.entries(block).filter(([key]) =>
+    !['type', 'title', 'display_title', 'columns', 'rows', 'source_image_base64', 'source_image_sha256'].includes(key) &&
+    !hiddenMetadata.has(key) && !key.startsWith('source_') && !key.startsWith('display_') && block[key] != null
+  ));
+  if (Object.keys(extras).length) html += '<div class="source-block">' + sourceValue(extras) + '</div>';
+  return html;
+}
+
+function sourceFigure(block) {
+  const title = block.title || block.description || ('Figure' + (block.figure_number ? ' ' + block.figure_number : ''));
+  const numberMatch = block.title && String(block.title).match(/Figure\s+(\d+)/i);
+  const number = numberMatch ? numberMatch[1] : (block.figure_number ? String(block.figure_number) : null);
+  const id = number ? claimRefId('figure', number) : '';
+  let html = '<figure class="source-block source-figure"' + (id ? ' id="' + id + '"' : '') + '>';
+  if (block.source_image_base64 && /^[A-Za-z0-9+/=]+$/.test(block.source_image_base64)) {
+    html += '<img loading="lazy" alt="' + sourceEscape(title) + '" src="data:' + sourceEscape(block.source_image_mime || 'image/png') + ';base64,' + block.source_image_base64 + '">';
+  }
+  const figureMetadata = new Set(['internal_text_transcription_status', 'transcription_note', 'source_image_origin']);
+  const details = Object.fromEntries(Object.entries(block).filter(([key]) =>
+    !['type', 'title', 'description', 'source_image_base64', 'source_image_mime', 'source_image_sha256', 'source_raster_dimensions_px'].includes(key) && !figureMetadata.has(key)
+  ));
+  html += '<figcaption><strong>' + sourceEscape(title) + '</strong>' + (block.title && block.description ? '<br>' + sourceEscape(block.description) : '') + sourceValue(details) + '</figcaption>';
+  return html + '</figure>';
+}
+
+function renderSourceBlock(block) {
+  const type = block.type || 'content';
+  if (['table', 'table_continuation', 'comparison', 'table_reference'].includes(type)) return sourceTable(block);
+  if (['figure', 'figure_table'].includes(type)) return sourceFigure(block);
+  if (['heading', 'step_heading', 'numbered_heading', 'lettered_heading', 'topic_heading', 'subtopic_heading', 'major_section_heading'].includes(type)) {
+    const prefix = block.number || block.label || '';
+    return '<div class="source-block"><h3>' + sourceEscape((prefix ? prefix + ' ' : '') + (block.text || block.title || '')) + '</h3></div>';
+  }
+  if (type === 'subheading') return '<div class="source-block"><h4>' + sourceEscape(block.text || block.source_text || '') + '</h4></div>';
+  if (type === 'instruction_step') return '<div class="source-block"><p>' + sourceEscape(block.text) + '</p></div>';
+  if (['bullet_list', 'sub_bullet_list', 'nested_bullet_list', 'hierarchical_list', 'definition_options', 'option_list', 'roman_list'].includes(type)) {
+    return '<div class="source-block">' + (block.label || block.lead_in ? '<h4>' + sourceEscape(block.label || block.lead_in) + '</h4>' : '') + sourceList(block.items) + '</div>';
+  }
+  if (type === 'numbered_list') return '<div class="source-block">' + sourceList(block.items, true) + '</div>';
+  if (['warning', 'caution'].includes(type)) return '<div class="source-block source-warning"><strong>' + sourceEscape(block.label || 'Warning') + '</strong><br>' + sourceValue(block.text || block.items) + '</div>';
+  if (['note', 'callout', 'diagnostic_rule', 'emphasis'].includes(type)) return '<div class="source-block source-callout">' + (block.label ? '<strong>' + sourceEscape(block.label) + '</strong> ' : '') + sourceValue(block.text || block.items) + '</div>';
+  if (type === 'formula') return '<div class="source-block source-formula">' + sourceEscape(block.text) + '</div>';
+  if (type === 'treatment_group') return '<div class="source-block"><h4>' + sourceEscape(block.heading) + '</h4>' + sourceList(block.items) + '</div>';
+  if (type === 'drug_group') return '<div class="source-block source-callout"><h4>' + sourceEscape(block.drug) + '</h4>' + sourceList(block.source_lines) + '</div>';
+  if (type === 'conditional_list') return '<div class="source-block"><h4>' + sourceEscape(block.lead_in) + '</h4>' + sourceList(block.items) + '</div>';
+  if (type === 'separator') return '<div class="source-block" style="text-align:center;font-weight:700;">' + sourceEscape(block.text) + '</div>';
+  if (['cross_reference', 'reference', 'footnote'].includes(type)) return '<div class="source-block"><em>' + sourceEscape(block.text) + '</em></div>';
+  if (type === 'lettered_item' || type === 'numbered_paragraph' || type === 'phase_line') return '<div class="source-block"><strong>' + sourceEscape(block.label || block.number || '') + '</strong> ' + sourceEscape(block.text) + '</div>';
+  if (type === 'bullet') return '<div class="source-block">• ' + sourceEscape(block.normalized_display_text || block.text) + '</div>';
+  if (type === 'paragraph') return '<div class="source-block"><p>' + sourceEscape(block.text) + '</p></div>';
+  const hiddenMetadata = new Set(['layout', 'rendering_note', 'semantic_relationship', 'internal_columns', 'source_emphasis', 'source_inline_emphasis', 'source_layout', 'continues_on_pdf_page', 'continues_from_pdf_page', 'continuation_of', 'continuation_of_previous_text']);
+  const remainder = Object.fromEntries(Object.entries(block).filter(([key]) => key !== 'type' && !hiddenMetadata.has(key) && !key.includes('base64') && !key.includes('sha256')));
+  return '<div class="source-block">' + sourceValue(remainder) + '</div>';
+}
+
+function renderAuditedContent(pages) {
+  RENDER_ID_SEEN = new Set();
+  let html = '<div class="audited-content">';
+  for (const page of pages) {
+    html += '<section class="audited-page" id="source-page-' + sourceEscape(page.printed_page) + '"><div class="audited-page-label"><span>Page ' + sourceEscape(page.printed_page) + '</span></div>';
+    html += (page.blocks || []).map(renderSourceBlock).join('');
+    html += '</section>';
+  }
+  return html + '</div>';
+}
+
+function clearTopicNavigationTracking() {
+  const scroller = document.getElementById('mainContent');
+  if (scroller && TOPIC_NAV_SCROLL_HANDLER) scroller.removeEventListener('scroll', TOPIC_NAV_SCROLL_HANDLER);
+  TOPIC_NAV_SCROLL_HANDLER = null;
+}
+
+function buildTopicNavigation(container) {
+  clearTopicNavigationTracking();
+  const headings = Array.from(container.querySelectorAll('.audited-content .source-block > h3, .detail-section > h3'));
+  if (headings.length < 2) return;
+
+  const headingText = heading => {
+    const copy = heading.cloneNode(true);
+    copy.querySelectorAll('.sec-chevron').forEach(node => node.remove());
+    return copy.textContent.replace(/\s+/g, ' ').trim();
+  };
+  const baseLabels = headings.map(headingText);
+  const totals = baseLabels.reduce((counts, label) => {
+    const key = label.toLocaleLowerCase();
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+  const seen = {};
+  const labels = headings.map((heading, index) => {
+    heading.id = 'topic-section-' + index;
+    const base = baseLabels[index] || ('Section ' + (index + 1));
+    const key = base.toLocaleLowerCase();
+    seen[key] = (seen[key] || 0) + 1;
+    if (totals[key] === 1) return base;
+    const page = heading.closest('.audited-page');
+    const pageLabel = page && page.querySelector('.audited-page-label span');
+    return base + ' · ' + (pageLabel ? pageLabel.textContent : ('Part ' + seen[key]));
+  });
+
+  const nav = document.createElement('nav');
+  nav.className = 'topic-nav';
+  nav.setAttribute('aria-label', 'On this topic');
+  const linksId = 'topic-nav-links-' + (currentDetailId || 'entry');
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'topic-nav-toggle';
+  toggle.setAttribute('aria-controls', linksId);
+  toggle.innerHTML = '<span class="topic-nav-title">On this topic</span><span class="topic-nav-current"></span><span class="topic-nav-count">' + headings.length + ' sections</span><span class="topic-nav-chevron">' + ic('chevron') + '</span>';
+  const links = document.createElement('div');
+  links.className = 'topic-nav-links';
+  links.id = linksId;
+
+  labels.forEach((label, index) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'topic-nav-link';
+    button.dataset.target = headings[index].id;
+    button.textContent = label;
+    links.appendChild(button);
+  });
+  nav.append(toggle, links);
+  const navAnchor = container.querySelector('.source-assurance') || container.querySelector('.detail-header');
+  navAnchor.insertAdjacentElement('afterend', nav);
+
+  const isMobile = window.matchMedia && window.matchMedia('(max-width: 720px)').matches;
+  const setCollapsed = collapsed => {
+    nav.classList.toggle('is-collapsed', collapsed);
+    toggle.setAttribute('aria-expanded', String(!collapsed));
+  };
+  setCollapsed(isMobile);
+  toggle.addEventListener('click', () => setCollapsed(!nav.classList.contains('is-collapsed')));
+
+  const navButtons = Array.from(links.querySelectorAll('.topic-nav-link'));
+  const currentLabel = toggle.querySelector('.topic-nav-current');
+  const setActive = index => {
+    navButtons.forEach((button, buttonIndex) => {
+      const active = buttonIndex === index;
+      button.classList.toggle('active', active);
+      if (active) button.setAttribute('aria-current', 'location');
+      else button.removeAttribute('aria-current');
+    });
+    currentLabel.textContent = labels[index];
+  };
+  setActive(0);
+
+  const scroller = document.getElementById('mainContent');
+  navButtons.forEach((button, index) => button.addEventListener('click', () => {
+    const target = headings[index];
+    const section = target.closest('.detail-section') || target.closest('.audited-group');
+    if (section && section.classList.contains('collapsed')) {
+      section.classList.remove('collapsed');
+      target.setAttribute('aria-expanded', 'true');
+    }
+    setActive(index);
+    if (isMobile) setCollapsed(true);
+    const top = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - nav.offsetHeight - 12;
+    scroller.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }));
+
+  let framePending = false;
+  TOPIC_NAV_SCROLL_HANDLER = () => {
+    if (framePending || !nav.isConnected) return;
+    framePending = true;
+    requestAnimationFrame(() => {
+      framePending = false;
+      const threshold = nav.getBoundingClientRect().bottom + 18;
+      let activeIndex = 0;
+      headings.forEach((heading, index) => {
+        if (heading.getBoundingClientRect().top <= threshold) activeIndex = index;
+      });
+      setActive(activeIndex);
+    });
+  };
+  scroller.addEventListener('scroll', TOPIC_NAV_SCROLL_HANDLER, { passive: true });
+}
+
+// Turn each rendered <div class="detail-section"><h3>Heading</h3>...content...</div>
+// into a collapsible accordion: content stays visible by default (nothing about
+// a clinical guideline should be hidden until asked), but tapping the heading
+// lets a clinician collapse sections they don't need on a small screen.
+function enhanceDetailSections(container) {
+  container.querySelectorAll('.detail-section').forEach(section => {
+    const h3 = section.querySelector(':scope > h3');
+    if (!h3 || h3.querySelector('.sec-chevron')) return; // already enhanced or no heading
+    const body = document.createElement('div');
+    body.className = 'sec-body';
+    // Move every node after the heading into the collapsible body wrapper.
+    while (h3.nextSibling) body.appendChild(h3.nextSibling);
+    section.appendChild(body);
+    const chevron = document.createElement('span');
+    chevron.className = 'sec-chevron';
+    chevron.innerHTML = ic('chevron');
+    h3.appendChild(chevron);
+    h3.setAttribute('role', 'button');
+    h3.setAttribute('tabindex', '0');
+    h3.setAttribute('aria-expanded', 'true');
+    const toggle = () => {
+      const collapsed = section.classList.toggle('collapsed');
+      h3.setAttribute('aria-expanded', String(!collapsed));
+    };
+    h3.addEventListener('click', toggle);
+    h3.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
+  });
+}
+
+// Group each printed-guideline heading ("Description", "Management", ...) with
+// the source blocks that follow it, up to the next heading, into a collapsible
+// section — mirroring enhanceDetailSections() but for the audited page content,
+// which is rendered as flat sibling blocks rather than a heading-owns-its-body tree.
+function enhanceAuditedHeadings(container) {
+  container.querySelectorAll('.audited-page').forEach(page => {
+    const isHeadingBlock = node => node.classList.contains('source-block') &&
+      node.children.length === 1 && node.firstElementChild && node.firstElementChild.tagName === 'H3';
+
+    const nodes = Array.from(page.children);
+    let i = 0;
+    while (i < nodes.length) {
+      const node = nodes[i];
+      if (!isHeadingBlock(node)) { i++; continue; }
+
+      const group = document.createElement('div');
+      group.className = 'audited-group';
+      node.parentNode.insertBefore(group, node);
+      group.appendChild(node);
+      const body = document.createElement('div');
+      body.className = 'audited-group-body';
+      group.appendChild(body);
+      i++;
+      while (i < nodes.length && !isHeadingBlock(nodes[i])) { body.appendChild(nodes[i]); i++; }
+
+      const h3 = node.firstElementChild;
+      const chevron = document.createElement('span');
+      chevron.className = 'sec-chevron';
+      chevron.innerHTML = ic('chevron');
+      h3.appendChild(chevron);
+      h3.setAttribute('role', 'button');
+      h3.setAttribute('tabindex', '0');
+      h3.setAttribute('aria-expanded', 'true');
+      const toggle = () => {
+        const collapsed = group.classList.toggle('collapsed');
+        h3.setAttribute('aria-expanded', String(!collapsed));
+      };
+      h3.addEventListener('click', toggle);
+      h3.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    }
+  });
+}
+
+// === BOOKMARKS ===
+function toggleBookmark(conditionId) {
+  const idx = BOOKMARKS.indexOf(conditionId);
+  const wasBookmarked = idx !== -1;
+  if (idx === -1) BOOKMARKS.push(conditionId);
+  else BOOKMARKS.splice(idx, 1);
+  localStorage.setItem('zstg_bookmarks', JSON.stringify(BOOKMARKS));
+  updateBookmarkCount();
+  haptic(wasBookmarked ? 8 : [8, 40, 12]);
+  const item = DATA.conditions.find(c => c.id === conditionId);
+  showToast(wasBookmarked ? 'Removed from bookmarks' : (ic('bookmark-filled') + ' Saved' + (item ? ': ' + item.title : '')));
+  // Refresh whichever screen triggered this, in place — never force-navigate away from it
+  if (currentScreen === 'detail' && currentDetailId === conditionId) {
+    showDetail(conditionId, false);
+  } else if (currentScreen === 'bookmarks') {
+    showBookmarks(false);
+  }
+}
+
+function updateBookmarkCount() {
+  document.getElementById('bookmarkCount').textContent = BOOKMARKS.length + ' saved';
+}
+
+function showBookmarks(navigate = true) {
+  const container = document.getElementById('bookmarkList');
+  
+  if (!BOOKMARKS.length) {
+    container.innerHTML = '<div class="bookmark-empty"><div class="be-icon">' + ic('bookmark', '40px') + '</div><div class="be-text">No bookmarks yet.<br>Use the bookmark icon on any topic to save it here.</div></div>';
+  } else {
+    container.innerHTML = '<div class="section-header">' + ic('bookmark-filled') + ' Bookmarks (' + BOOKMARKS.length + ')</div>';
+    for (const id of BOOKMARKS) {
+      const item = DATA.conditions.find(c => c.id === id);
+      if (!item) continue;
+      const sectionInfo = DATA.sections[item.section] || {};
+      const div = document.createElement('div');
+      div.className = 'list-item';
+      div.onclick = () => showDetail(id);
+      div.innerHTML = `
+        <span class="li-icon">${ic(sectionInfo.icon || 'file')}</span>
+        <div class="li-text">
+          <div class="li-title">${item.title}</div>
+          <div class="li-sub">${sectionInfo.name || ''}</div>
+        </div>
+        <button class="cross-ref" style="font-size:calc(11px * var(--tsize-mult));padding:2px 8px;" onclick="event.stopPropagation();toggleBookmark('${id}')">Remove</button>
+        <span class="li-chevron">›</span>
+      `;
+      container.appendChild(div);
+    }
+  }
+  
+  if (navigate) {
+    screenStack.push(currentScreen);
+    showScreen('bookmarks', false);
+  }
+}
+
+// === SETTINGS ===
+function clearBookmarks() {
+  BOOKMARKS = [];
+  localStorage.setItem('zstg_bookmarks', JSON.stringify(BOOKMARKS));
+  updateBookmarkCount();
+  showToast('Bookmarks cleared');
+}
+
+function clearHistory() {
+  SEARCH_HISTORY = [];
+  localStorage.setItem('zstg_search_history', JSON.stringify(SEARCH_HISTORY));
+  renderRecentSearches();
+  showToast('Search history cleared');
+}
+
+// === SERVICE WORKER REGISTRATION + UPDATE DETECTION ===
+// `hadController` records whether this page load was already being served by
+// a service worker. If it was, and the controller later changes, that's a
+// genuine update taking over — not just the very first install claiming an
+// uncontrolled page. That distinction is what stops the update banner from
+// firing spuriously on a brand-new install.
+let hadController = false;
+if ('serviceWorker' in navigator) {
+  hadController = !!navigator.serviceWorker.controller;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(reg => {
+      console.log('SW registered:', reg.scope);
+    }).catch(err => {
+      console.log('SW registration failed:', err);
+    });
+  });
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (hadController) {
+      showUpdateBanner();
+    }
+    hadController = true;
+  });
+}
+
+function showUpdateBanner() {
+  const updateBanner = document.getElementById('updateBanner');
+  updateBanner.style.top = '';
+  updateBanner.classList.add('visible');
+}
+function applyUpdate() {
+  // The new service worker is already active and controlling the page (that's
+  // what fired controllerchange) — the only thing left to do is reload so the
+  // page picks up the new index.html / data-embed.js it's now serving.
+  window.location.reload();
+}
+function dismissUpdateBanner() {
+  document.getElementById('updateBanner').classList.remove('visible');
+}
+
+// === INSTALL APP PROMPT ===
+// Chromium-based browsers fire beforeinstallprompt when the app meets
+// installability criteria instead of showing their own mini-infobar; we
+// capture it so Settings can offer to install later, without an on-screen
+// banner popping up over the content.
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const settingsRow = document.getElementById('installSettingsRow');
+  if (settingsRow) settingsRow.style.display = 'flex';
+}, { passive: false });
+
+async function triggerInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const choice = await deferredInstallPrompt.userChoice;
+  trackEvent('install_prompt_outcome', choice.outcome); // 'accepted' or 'dismissed'
+  deferredInstallPrompt = null;
+}
+window.addEventListener('appinstalled', () => {
+  const settingsRow = document.getElementById('installSettingsRow');
+  if (settingsRow) settingsRow.style.display = 'none';
+  trackEvent('installed', '1');
+  showToast('ZSTG installed');
+});
+
+// === USAGE TELEMETRY (local-only aggregate counters) ===
+// There's no backend yet (that's Phase 2), so this can't phone home on its
+// own — it just keeps aggregate counts on-device: screen views, committed
+// search terms, and which conditions/drugs actually get opened. During a
+// pilot, a reviewer taps "Copy usage summary" in Settings and shares that
+// text however the pilot is set up to collect it (form, email, etc). This
+// is deliberately NOT a raw event log with timestamps — aggregate counts
+// are enough to answer "what do clinicians actually search for" without
+// keeping a detailed activity trail on someone's personal phone.
+const TELEMETRY_KEY = 'zstg_telemetry_v1';
+function loadTelemetry() {
+  try {
+    return JSON.parse(localStorage.getItem(TELEMETRY_KEY)) || {
+      firstUse: new Date().toISOString(), sessions: 0,
+      screenViews: {}, searchTerms: {}, conditionOpens: {}, drugOpens: {}, other: {}
+    };
+  } catch (e) {
+    return { firstUse: new Date().toISOString(), sessions: 0, screenViews: {}, searchTerms: {}, conditionOpens: {}, drugOpens: {}, other: {} };
+  }
+}
+let TELEMETRY = loadTelemetry();
+function saveTelemetry() {
+  try { localStorage.setItem(TELEMETRY_KEY, JSON.stringify(TELEMETRY)); } catch (e) {}
+}
+function trackEvent(kind, key) {
+  const bucket = { screen: 'screenViews', search: 'searchTerms', condition: 'conditionOpens', drug: 'drugOpens' }[kind] || 'other';
+  const k = String(key).toLowerCase().trim().slice(0, 60);
+  if (!k) return;
+  TELEMETRY[bucket][k] = (TELEMETRY[bucket][k] || 0) + 1;
+  saveTelemetry();
+}
+function trackSession() {
+  TELEMETRY.sessions = (TELEMETRY.sessions || 0) + 1;
+  TELEMETRY.lastUse = new Date().toISOString();
+  saveTelemetry();
+}
+function topEntries(obj, n) {
+  return Object.entries(obj || {}).sort((a, b) => b[1] - a[1]).slice(0, n);
+}
+function buildTelemetrySummary() {
+  const t = TELEMETRY;
+  const lines = [
+    'ZSTG usage summary',
+    'First used: ' + (t.firstUse ? t.firstUse.slice(0, 10) : '—'),
+    'Last used: ' + (t.lastUse ? t.lastUse.slice(0, 10) : '—'),
+    'Sessions: ' + (t.sessions || 0),
+    '',
+    'Top conditions opened:',
+    ...topEntries(t.conditionOpens, 10).map(([k, v]) => '  ' + k + ' — ' + v),
+    '',
+    'Top drugs looked up:',
+    ...topEntries(t.drugOpens, 10).map(([k, v]) => '  ' + k + ' — ' + v),
+    '',
+    'Top search terms:',
+    ...topEntries(t.searchTerms, 10).map(([k, v]) => '  ' + k + ' — ' + v),
+  ];
+  return lines.join('\n');
+}
+async function copyTelemetrySummary() {
+  const text = buildTelemetrySummary();
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast('Usage summary copied');
+  } catch (e) {
+    showToast('Unable to copy on this device');
+  }
+}
+function clearTelemetry() {
+  TELEMETRY = { firstUse: new Date().toISOString(), sessions: 1, screenViews: {}, searchTerms: {}, conditionOpens: {}, drugOpens: {}, other: {} };
+  saveTelemetry();
+  showToast('Usage data cleared');
+}
+
+// === KEYBOARD ACCESSIBILITY ===
+// Many list rows are plain <div onclick=...> for lightweight rendering; give
+// each one a button role, tab stop, and Enter/Space activation so the whole
+// app is usable without a touchscreen or mouse.
+function enhanceInteractive(root) {
+  (root || document).querySelectorAll('.list-item, .search-result-item, .history-item, .drug-condition-item').forEach(el => {
+    if (el.dataset.kbEnhanced) return;
+    el.dataset.kbEnhanced = '1';
+    if (!el.hasAttribute('role')) el.setAttribute('role', 'button');
+    if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
+    });
+  });
+}
+// Screens are re-rendered via innerHTML/appendChild in many places; rather than
+// thread a call through every render function, watch the main content area and
+// enhance any new interactive rows as they appear.
+new MutationObserver((mutations) => {
+  for (const m of mutations) {
+    if (m.addedNodes.length) enhanceInteractive(m.target.closest ? m.target : document.getElementById('mainContent'));
+  }
+}).observe(document.getElementById('mainContent'), { childList: true, subtree: true });
+
+// === TAP RIPPLE FEEDBACK ===
+const RIPPLE_SELECTOR = '.dash-card, .list-item, .nav-item, .cross-ref, .data-ref-link, .search-result-item, .back-btn, .app-header .seal, .emergency-fab, .settings-item';
+document.addEventListener('pointerdown', (e) => {
+  const el = e.target.closest(RIPPLE_SELECTOR);
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height) * 1.2;
+  const ripple = document.createElement('span');
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  const x = (e.clientX ?? rect.left + rect.width / 2) - rect.left - size / 2;
+  const y = (e.clientY ?? rect.top + rect.height / 2) - rect.top - size / 2;
+  ripple.style.left = x + 'px';
+  ripple.style.top = y + 'px';
+  el.appendChild(ripple);
+  ripple.addEventListener('animationend', () => ripple.remove());
+  haptic();
+}, { passive: true });
+
+function haptic(ms = 8) {
+  if (navigator.vibrate) { try { navigator.vibrate(ms); } catch (e) {} }
+}
+
+// === UTILITY FABS: Back to Top / Share / Print ===
+(function initScrollWatcher() {
+  const scroller = document.getElementById('mainContent');
+  if (!scroller) return;
+  scroller.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTopFab');
+    if (!btn) return;
+    btn.classList.toggle('show-btt', scroller.scrollTop > 400 &&
+      (currentScreen === 'detail' || currentScreen === 'drug-detail'));
+  }, { passive: true });
+})();
+
+function scrollDetailToTop() {
+  const scroller = document.getElementById('mainContent');
+  if (scroller) scroller.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getCurrentDetailTitle() {
+  if (currentScreen === 'detail' && currentDetailId) {
+    const item = DATA.conditions.find(c => c.id === currentDetailId);
+    return item ? item.title : 'ZSTG Guideline';
+  }
+  if (currentScreen === 'drug-detail') {
+    return document.getElementById('headerTitle').textContent || 'Medicine';
+  }
+  return 'ZSTG';
+}
+
+function printCurrentGuideline() {
+  window.print();
+}
+
+async function shareCurrentGuideline() {
+  const title = getCurrentDetailTitle();
+  const shareText = title + ' — Zambia Standard Treatment Guidelines, Sixth Edition (2025)';
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: 'ZSTG: ' + title, text: shareText });
+    } catch (err) {
+      // User cancelled the share sheet — no need to surface an error toast.
+    }
+  } else if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(shareText);
+      showToast('Copied to clipboard: ' + title);
+    } catch (err) {
+      showToast('Unable to share on this device');
+    }
+  } else {
+    showToast('Sharing is not supported on this device');
+  }
+}
+
+// === TOAST NOTIFICATIONS ===
+function showToast(message, duration = 2200) {
+  const host = document.getElementById('toastHost');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = '<span class="toast-dot"></span><span>' + message + '</span>';
+  host.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('toast-out');
+    toast.addEventListener('animationend', () => toast.remove(), { once: true });
+  }, duration);
+}
+
+// === START ===
+init();
+</script>
+</body>
+</html>
