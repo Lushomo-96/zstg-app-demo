@@ -6,7 +6,7 @@
  * page on any navigation while offline.
  */
 
-const CACHE_NAME = 'zstg-cache-v18-demo-disclaimer';
+const CACHE_NAME = 'zstg-cache-v19-disclaimer-reword';
 
 // Every asset the app actually requests over the network, so a first-time
 // install finishes 100% offline-ready — not just whatever happens to get

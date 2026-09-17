@@ -956,7 +956,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
   <div class="loading-bar"><div class="loading-bar-inner"></div></div>
   <div class="version">Clinical Companion &middot; v2.0.0</div>
   <div class="dev-credit">Developed by Perseverance | Mr. Lushomo Mwiinde, ML</div>
-  <div class="splash-disclaimer">Demo build, not yet endorsed by the Ministry of Health &mdash; pending review and approval</div>
+  <div class="splash-disclaimer">Demo build, not yet endorsed by the Ministry of Health &mdash; yet to be presented for review and approval</div>
 </div>
 
 <!-- HEADER -->
@@ -993,10 +993,6 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
   <!-- HOME SCREEN -->
   <div class="screen active" id="screen-home">
     <div class="home-container">
-      <div class="app-disclaimer">
-        <span class="ad-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L22 20 H2 Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
-        <div class="ad-text"><strong>Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, presented for the Ministry of Health's review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</div>
-      </div>
       <div class="home-hero">
         <div class="hero-kicker">Republic of Zambia &middot; Ministry of Health</div>
         <h2>Standard Treatment Guidelines</h2>
@@ -1005,6 +1001,10 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
           <span class="home-assurance-status"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><polyline points="8.5 12 11 14.5 15.8 9.5"/></svg> Final audited source</span>
           <span class="home-assurance-meta"><span id="homeTopicCount">153</span> topics &middot; <span id="homeDrugCount">158</span> medicines &middot; Offline ready</span>
         </div>
+      </div>
+      <div class="app-disclaimer">
+        <span class="ad-icon"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L22 20 H2 Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg></span>
+        <div class="ad-text"><strong>Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, yet to be presented to the Ministry of Health for review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</div>
       </div>
       <div class="home-search-bar" onclick="showScreen('search')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showScreen('search');}" role="button" tabindex="0" aria-label="Open guideline search">
         <span class="search-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
@@ -1135,7 +1135,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
       <div class="settings-item" onclick="clearTelemetry()"><span class="si-label">Clear Usage Data</span><span class="si-value">Tap to clear</span></div>
       <div class="section-header" style="margin-top:16px;">About</div>
       <div style="padding:14px 16px 4px;font-size:calc(13px * var(--tsize-mult));color:var(--ink-soft);line-height:1.7;">
-        <p style="padding:10px 12px;border:1px solid var(--red);border-left:4px solid var(--red);border-radius:var(--radius-sm);background:var(--red-wash);color:var(--ink);"><strong style="color:var(--red);">Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, presented for the Ministry of Health's review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</p>
+        <p style="padding:10px 12px;border:1px solid var(--red);border-left:4px solid var(--red);border-radius:var(--radius-sm);background:var(--red-wash);color:var(--ink);"><strong style="color:var(--red);">Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, yet to be presented to the Ministry of Health for review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</p>
         <p style="margin-top:12px;">The underlying guideline text is sourced from the official Zambia Standard Treatment Guidelines, Sixth Edition (2025), published by the Ministry of Health, Republic of Zambia. Reproducing that text here does not imply the Ministry's endorsement of this application.</p>
         <p style="margin-top:8px;">All clinical content is sourced from the official STG document. The current dataset passed source-fidelity audit; any future entry requiring verification will be clearly marked at the point of use.</p>
         <p style="margin-top:10px;font-weight:700;color:var(--ink);">This app is a clinical reference tool. Always verify critical dosing information against the official printed guideline.</p>
