@@ -321,8 +321,10 @@ svg.icon { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-wid
   padding: 12px 14px; margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-start;
 }
 .verification-warning .vw-icon { flex-shrink: 0; color: var(--gold); margin-top: 1px; }
-.verification-warning .vw-text { font-size: calc(12.5px * var(--tsize-mult)); color: #6B4700; line-height: 1.6; }
+.verification-warning .vw-text { font-size: calc(12.5px * var(--tsize-mult)); color: var(--ink); line-height: 1.6; }
 .verification-warning .vw-text strong { color: var(--ink); }
+.verification-warning ul { margin: 7px 0 0 18px; }
+.verification-warning li { margin-top: 5px; }
 
 .app-disclaimer {
   background: var(--red-wash); border: 1px solid var(--red); border-left: 4px solid var(--red); border-radius: var(--radius-sm);
@@ -553,7 +555,8 @@ svg.icon { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-wid
 /* === SETTINGS === */
 .settings-item {
   display: flex; align-items: center; justify-content: space-between; padding: 13px 14px;
-  background: var(--card-bg); border-bottom: 1px solid var(--line); cursor: pointer;
+  background: var(--card-bg); border: 0; border-bottom: 1px solid var(--line); color: inherit; cursor: pointer;
+  font-family: inherit; text-align: left; width: 100%;
 }
 .settings-item:first-child { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
 .settings-item:last-child { border-radius: 0 0 var(--radius-sm) var(--radius-sm); border-bottom: none; }
@@ -998,7 +1001,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
         <h2>Standard Treatment Guidelines</h2>
         <p class="edition">Sixth Edition (2025) &middot; Clinical Reference Companion</p>
         <div class="home-assurance">
-          <span class="home-assurance-status"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><polyline points="8.5 12 11 14.5 15.8 9.5"/></svg> Final audited source</span>
+          <span class="home-assurance-status"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><polyline points="8.5 12 11 14.5 15.8 9.5"/></svg> Audited source · caveats marked</span>
           <span class="home-assurance-meta"><span id="homeTopicCount">153</span> topics &middot; <span id="homeDrugCount">158</span> medicines &middot; Offline ready</span>
         </div>
       </div>
@@ -1124,20 +1127,20 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
         </div>
       </div>
       <div class="section-header" style="margin-top:16px;">Actions</div>
-      <div class="settings-item" id="installSettingsRow" onclick="triggerInstall()" style="display:none;"><span class="si-label">Install App</span><span class="si-value">Tap to install</span></div>
-      <div class="settings-item" onclick="clearBookmarks()"><span class="si-label">Clear Bookmarks</span><span class="si-value">Tap to clear</span></div>
-      <div class="settings-item" onclick="clearHistory()"><span class="si-label">Clear Search History</span><span class="si-value">Tap to clear</span></div>
+      <button type="button" class="settings-item" id="installSettingsRow" onclick="triggerInstall()" style="display:none;"><span class="si-label">Install App</span><span class="si-value">Tap to install</span></button>
+      <button type="button" class="settings-item" onclick="clearBookmarks()"><span class="si-label">Clear Bookmarks</span><span class="si-value">Tap to clear</span></button>
+      <button type="button" class="settings-item" onclick="clearHistory()"><span class="si-label">Clear Search History</span><span class="si-value">Tap to clear</span></button>
       <div class="section-header" style="margin-top:16px;">Usage Data (this device only)</div>
       <div style="padding:6px 16px 4px;font-size:calc(12px * var(--tsize-mult));color:var(--ink-soft);line-height:1.6;">
         Kept only on this phone — nothing is sent anywhere automatically. During a pilot, use "Copy usage summary" to share what this device has actually used.
       </div>
-      <div class="settings-item" onclick="copyTelemetrySummary()"><span class="si-label">Copy Usage Summary</span><span class="si-value">Tap to copy</span></div>
-      <div class="settings-item" onclick="clearTelemetry()"><span class="si-label">Clear Usage Data</span><span class="si-value">Tap to clear</span></div>
+      <button type="button" class="settings-item" onclick="copyTelemetrySummary()"><span class="si-label">Copy Usage Summary</span><span class="si-value">Tap to copy</span></button>
+      <button type="button" class="settings-item" onclick="clearTelemetry()"><span class="si-label">Clear Usage Data</span><span class="si-value">Tap to clear</span></button>
       <div class="section-header" style="margin-top:16px;">About</div>
       <div style="padding:14px 16px 4px;font-size:calc(13px * var(--tsize-mult));color:var(--ink-soft);line-height:1.7;">
         <p style="padding:10px 12px;border:1px solid var(--red);border-left:4px solid var(--red);border-radius:var(--radius-sm);background:var(--red-wash);color:var(--ink);"><strong style="color:var(--red);">Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, yet to be presented to the Ministry of Health for review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</p>
         <p style="margin-top:12px;">The underlying guideline text is sourced from the official Zambia Standard Treatment Guidelines, Sixth Edition (2025), published by the Ministry of Health, Republic of Zambia. Reproducing that text here does not imply the Ministry's endorsement of this application.</p>
-        <p style="margin-top:8px;">All clinical content is sourced from the official STG document. The current dataset passed source-fidelity audit; any future entry requiring verification will be clearly marked at the point of use.</p>
+        <p style="margin-top:8px;">All clinical content is sourced from the official STG document. The dataset passed source-fidelity audit, and known source caveats are marked on the affected topics.</p>
         <p style="margin-top:10px;font-weight:700;color:var(--ink);">This app is a clinical reference tool. Always verify critical dosing information against the official printed guideline.</p>
         <p style="margin-top:16px;">Guideline content &copy; 2025 Ministry of Health, Republic of Zambia</p>
         <p style="margin-top:16px;">Developed by: Mr. Lushomo Mwiinde, Medical Licentiate<br>Company: Perseverance<br>For: Ministry of Health Zambia</p>
@@ -1239,8 +1242,17 @@ function escapeHtml(value) {
 
 // === DATA STORE ===
 let DATA = null;
-let BOOKMARKS = JSON.parse(localStorage.getItem('zstg_bookmarks') || '[]');
-let SEARCH_HISTORY = JSON.parse(localStorage.getItem('zstg_search_history') || '[]');
+function loadStoredArray(key) {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed.filter(value => typeof value === 'string') : [];
+  } catch (error) {
+    try { localStorage.removeItem(key); } catch (_) {}
+    return [];
+  }
+}
+let BOOKMARKS = loadStoredArray('zstg_bookmarks');
+let SEARCH_HISTORY = loadStoredArray('zstg_search_history');
 let currentScreen = 'home';
 let currentDetailId = null;
 let screenStack = [];
@@ -1319,7 +1331,8 @@ function init() {
       DATA.meta.total_conditions + ' conditions, ' + DATA.meta.unique_drugs + ' drugs';
     const sourceInfo = document.getElementById('sourceInfo');
     if (sourceInfo) sourceInfo.querySelector('.si-value').textContent =
-      (DATA.meta.source_status === 'FINAL AUDITED' ? 'Final audited' : 'Review required') + ' · ' + DATA.meta.source_files + ' source files';
+      (DATA.meta.source_status === 'FINAL AUDITED' ? 'Final audited' : 'Review required') + ' · ' +
+      DATA.meta.conditions_with_verification_issues + ' flagged topics';
     
     // Category counts
     for (const [key, section] of Object.entries(DATA.sections)) {
@@ -1582,8 +1595,8 @@ function showEmergencyGuidelines() {
 
 // === SEARCH ===
 // Common lay terms, abbreviations, and misspellings mapped to the clinical
-// keywords they should surface. Each key is checked as a substring of the
-// query, so "my sugar is high" still matches "sugar" -> diabetes.
+// keywords they should surface. Each key is matched as a complete term, so
+// "my sugar is high" matches "sugar" without "mi" matching inside "vomiting".
 const SEARCH_SYNONYMS = {
   'high bp': ['hypertension'], 'high blood pressure': ['hypertension'], 'bp high': ['hypertension'],
   'sugar': ['diabetes'], 'blood sugar': ['diabetes'], 'high sugar': ['diabetes'],
@@ -1602,21 +1615,29 @@ const SEARCH_SYNONYMS = {
 function expandSynonyms(q) {
   const extra = [];
   for (const [term, targets] of Object.entries(SEARCH_SYNONYMS)) {
-    if (q.includes(term)) extra.push(...targets);
+    if (containsWholeTerm(q, term)) extra.push(...targets);
   }
   return extra;
+}
+function containsWholeTerm(text, term) {
+  const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('(^|[^a-z0-9])' + escaped + '($|[^a-z0-9])', 'i').test(text);
+}
+function keywordMatches(condition, term) {
+  const keywords = (condition.keywords || []).map(keyword => String(keyword).toLowerCase());
+  if (term.includes(' ')) return term.split(/\s+/).every(part => keywords.includes(part));
+  return keywords.includes(term);
 }
 function doSearch(query) {
   const clearBtn = document.getElementById('searchClearBtn');
   if (clearBtn) clearBtn.classList.toggle('visible', !!query);
-  
-  if (!query || query.length < 2) {
+
+  const q = String(query || '').toLowerCase().trim().replace(/\s+/g, ' ');
+  if (q.length < 2) {
     document.getElementById('searchResults').innerHTML = '';
     renderSearchHistory();
     return;
   }
-  
-  const q = query.toLowerCase();
 
   // Score each match so the most relevant results surface first, instead of
   // whatever order they happen to sit in in the data file:
@@ -1627,14 +1648,15 @@ function doSearch(query) {
   const synonymTerms = expandSynonyms(q);
   function scoreMatch(c) {
     const title = c.title.toLowerCase();
+    const titleHasQuery = q.length <= 3 ? containsWholeTerm(title, q) : title.includes(q);
     if (title === q) return 4;
-    if (title.startsWith(q)) return 3;
-    if (title.includes(q)) return 2;
-    if (c.keywords && c.keywords.some(k => k.includes(q))) return 1;
+    if (titleHasQuery && title.startsWith(q)) return 3;
+    if (titleHasQuery) return 2;
+    if (keywordMatches(c, q)) return 1;
     // Synonym match: a bit below a direct keyword hit, but still surfaced —
     // e.g. "sugar" -> "diabetes" or "fits" -> "seizures"/"epilepsy".
-    if (synonymTerms.some(term => title.includes(term))) return 1;
-    if (synonymTerms.some(term => c.keywords && c.keywords.some(k => k.includes(term)))) return 0.5;
+    if (synonymTerms.some(term => containsWholeTerm(title, term))) return 1;
+    if (synonymTerms.some(term => keywordMatches(c, term))) return 0.5;
     return 0;
   }
 
@@ -1873,12 +1895,25 @@ function showDetail(conditionId, navigate = true) {
   html += '</div>';
   html += renderSourceAssurance(item);
   
-  // Verification warning
-  if (item.has_verification_issues) {
+  // Point-of-use source caveats retained by the audited source corpus.
+  const sourceFlags = Array.isArray(item.source_flags) ? item.source_flags : [];
+  if (sourceFlags.length || item.has_verification_issues) {
     html += '<div class="verification-warning">';
     html += '<span class="vw-icon">' + ic('warning') + '</span>';
-    html += '<div class="vw-text">This entry has not been fully verified against the printed guideline. Verify critical details before clinical use.' + 
-      (item.verification_note ? '<br><br><strong>Note:</strong> ' + item.verification_note : '') + '</div>';
+    html += '<div class="vw-text"><strong>Source caveat' + (sourceFlags.length === 1 ? '' : 's') + '</strong><br>' +
+      'The audited transcription preserves the guideline as printed, including the following item' + (sourceFlags.length === 1 ? '' : 's') + ' that may require clinical verification.';
+    if (sourceFlags.length) {
+      html += '<ul>';
+      for (const flag of sourceFlags) {
+        const description = flag.detail || flag.source_text || flag.location || flag.type || 'Source issue recorded';
+        const location = flag.location && description !== flag.location ? '<br><em>' + sourceEscape(flag.location) + '</em>' : '';
+        html += '<li>' + sourceEscape(description) + location + '</li>';
+      }
+      html += '</ul>';
+    } else if (item.verification_note) {
+      html += '<br><br>' + sourceEscape(item.verification_note);
+    }
+    html += '</div>';
     html += '</div>';
   }
 
@@ -2369,18 +2404,23 @@ function sourcePageSummary(source) {
 
 function renderSourceAssurance(item) {
   const source = (item.data && item.data.source) || {};
-  const auditPassed = typeof source.audit_status === 'string' && source.audit_status.includes('PASSED');
-  const assured = item.verification_status === 'final_audited_source' && auditPassed && !item.has_verification_issues;
+  const auditPassed = typeof source.audit_status === 'string' && /pass|complete|final/i.test(source.audit_status);
+  const sourceFlags = Array.isArray(item.source_flags) ? item.source_flags : [];
+  const assured = item.verification_status === 'final_audited_source' && auditPassed;
+  const needsAttention = !assured || sourceFlags.length > 0;
   const documentName = (DATA.meta && DATA.meta.document) || source.document || 'Zambia Standard Treatment Guidelines';
-  const status = assured ? 'Final audited source' : 'Source verification required';
+  const status = assured ? (sourceFlags.length ? 'Audited source · caveats noted' : 'Final audited source') : 'Source verification required';
   const summary = assured
-    ? 'Checked against ' + documentName + '. Guideline wording is preserved as printed.'
+    ? 'Checked against ' + documentName + '. Guideline wording is preserved as printed.' +
+      (sourceFlags.length ? ' Review the marked source caveats before clinical use.' : '')
     : 'This entry needs verification against the official printed guideline before clinical use.';
   const pageSummary = sourcePageSummary(source);
-  return '<details class="source-assurance topic-assurance' + (assured ? '' : ' needs-review') + '">' +
-    '<summary class="source-assurance-toggle"><span class="source-assurance-icon">' + ic(assured ? 'shield-check' : 'warning') + '</span><span class="source-assurance-label"><strong>Source assurance</strong><span>' + status + '</span></span><span class="source-assurance-page">' + sourceEscape(pageSummary) + '</span><span class="source-assurance-expand">' + ic('chevron') + '</span></summary>' +
+  return '<details class="source-assurance topic-assurance' + (needsAttention ? ' needs-review' : '') + '">' +
+    '<summary class="source-assurance-toggle"><span class="source-assurance-icon">' + ic(needsAttention ? 'warning' : 'shield-check') + '</span><span class="source-assurance-label"><strong>Source assurance</strong><span>' + sourceEscape(status) + '</span></span><span class="source-assurance-page">' + sourceEscape(pageSummary) + '</span><span class="source-assurance-expand">' + ic('chevron') + '</span></summary>' +
     '<div class="source-assurance-details"><p class="source-assurance-description">' + sourceEscape(summary) + '</p>' +
-    '<div class="source-assurance-facts"><span class="source-assurance-fact">' + sourceEscape(pageSummary) + '</span><span class="source-assurance-fact">' + (auditPassed ? 'Audit passed' : 'Audit pending') + '</span><span class="source-assurance-fact">Source-linked content</span></div>' +
+    '<div class="source-assurance-facts"><span class="source-assurance-fact">' + sourceEscape(pageSummary) + '</span><span class="source-assurance-fact">' + (auditPassed ? 'Audit passed' : 'Audit pending') + '</span>' +
+    (sourceFlags.length ? '<span class="source-assurance-fact">' + sourceFlags.length + ' source caveat' + (sourceFlags.length === 1 ? '' : 's') + '</span>' : '') +
+    '<span class="source-assurance-fact">Source-linked content</span></div>' +
     '<p class="source-assurance-note">Source assurance confirms faithful transcription; it does not replace clinical judgement or local protocols.</p></div></details>';
 }
 
@@ -2846,6 +2886,7 @@ function showBookmarks(navigate = true) {
 
 // === SETTINGS ===
 function clearBookmarks() {
+  if (BOOKMARKS.length && !window.confirm('Clear all saved bookmarks from this device?')) return;
   BOOKMARKS = [];
   localStorage.setItem('zstg_bookmarks', JSON.stringify(BOOKMARKS));
   updateBookmarkCount();
@@ -2853,6 +2894,7 @@ function clearBookmarks() {
 }
 
 function clearHistory() {
+  if (SEARCH_HISTORY.length && !window.confirm('Clear all recent searches from this device?')) return;
   SEARCH_HISTORY = [];
   localStorage.setItem('zstg_search_history', JSON.stringify(SEARCH_HISTORY));
   renderRecentSearches();
@@ -2993,6 +3035,7 @@ async function copyTelemetrySummary() {
   }
 }
 function clearTelemetry() {
+  if (!window.confirm('Clear the usage summary stored on this device?')) return;
   TELEMETRY = { firstUse: new Date().toISOString(), sessions: 1, screenViews: {}, searchTerms: {}, conditionOpens: {}, drugOpens: {}, other: {} };
   saveTelemetry();
   showToast('Usage data cleared');
@@ -3103,7 +3146,11 @@ function showToast(message, duration = 2200) {
   const host = document.getElementById('toastHost');
   const toast = document.createElement('div');
   toast.className = 'toast';
-  toast.innerHTML = '<span class="toast-dot"></span><span>' + message + '</span>';
+  const dot = document.createElement('span');
+  dot.className = 'toast-dot';
+  const label = document.createElement('span');
+  label.textContent = String(message);
+  toast.append(dot, label);
   host.appendChild(toast);
   setTimeout(() => {
     toast.classList.add('toast-out');

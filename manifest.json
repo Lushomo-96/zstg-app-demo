@@ -1,8 +1,10 @@
 {
-  "id": "/index.html",
+  "id": "./",
   "name": "ZSTG — Zambia Standard Treatment Guidelines",
   "short_name": "ZSTG",
   "description": "Offline clinical reference for the Zambia Standard Treatment Guidelines, Edition 6 (2025)",
+  "lang": "en",
+  "dir": "ltr",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

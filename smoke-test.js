@@ -109,6 +109,23 @@ if (DATA) {
       assert.ok(ids.has(id), `emergency_ids references unknown condition ${id}`);
     }
   });
+
+  check('source caveats are propagated to affected topics and metadata', () => {
+    const flagged = DATA.conditions.filter(c => c.has_verification_issues);
+    const sourceFlagCount = (DATA.source_audits || []).reduce((total, audit) => total + (audit.source_flags || []).length, 0);
+    assert.strictEqual(DATA.meta.conditions_with_verification_issues, flagged.length);
+    assert.strictEqual(DATA.meta.total_source_flags, sourceFlagCount);
+    assert.ok(flagged.every(c => Array.isArray(c.source_flags) && c.source_flags.length > 0));
+    const flagKey = flag => flag.id || flag.flag_id || [flag.type, flag.location, flag.detail, flag.source_text].join('|');
+    const allFlags = new Set((DATA.source_audits || []).flatMap(audit => (audit.source_flags || []).map(flagKey)));
+    const mappedFlags = new Set(DATA.conditions.flatMap(c => (c.source_flags || []).map(flagKey)));
+    assert.deepStrictEqual([...allFlags].filter(key => !mappedFlags.has(key)), [], 'some audited source flags are not mapped to a topic');
+    assert.ok(DATA.conditions.every(c => /pass|complete|final/i.test(c.data.source.audit_status || '')),
+      'a topic uses an audit status the assurance UI will not recognize');
+    const knownHeadingAnomaly = DATA.conditions.find(c => c.code === '6.3');
+    assert.ok(knownHeadingAnomaly && knownHeadingAnomaly.source_flags.some(flag => flag.type === 'source_heading_anomaly'),
+      'known section 6.3 heading anomaly is not shown at point of use');
+  });
 }
 
 // --- Embedded data matches data.json ---------------------------------------
@@ -128,6 +145,8 @@ section('manifest.json');
 
 check('parses as JSON and every icon file exists', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(APP_DIR, 'manifest.json'), 'utf8'));
+  assert.ok(!manifest.id.startsWith('/'), 'manifest id must remain relative for subdirectory hosting');
+  assert.ok(manifest.start_url.startsWith('./'), 'start_url must remain inside the deployed scope');
   assert.ok(Array.isArray(manifest.icons) && manifest.icons.length > 0, 'no icons declared');
   for (const icon of manifest.icons) {
     const iconPath = path.join(APP_DIR, icon.src);
@@ -157,6 +176,13 @@ check('every PRECACHE_URLS entry exists on disk', () => {
   }
 });
 
+check('precache is atomic and cache cleanup is app-scoped', () => {
+  assert.ok(/cache\.addAll\(PRECACHE_URLS\)/.test(swSrc), 'critical assets are not cached atomically');
+  assert.ok(/name\.startsWith\(CACHE_PREFIX\)/.test(swSrc), 'activation may delete unrelated origin caches');
+  assert.ok(!/catch\([^)]*=>\s*caches\.match\(['"]index\.html/.test(swSrc),
+    'failed subresources must not be replaced with index.html');
+});
+
 // --- index.html -----------------------------------------------------------
 
 section('index.html');
@@ -179,6 +205,23 @@ check('escapeHtml() is defined and used to sanitize user search input', () => {
 
 check('service worker cache name is registered', () => {
   assert.ok(/navigator\.serviceWorker\.register/.test(htmlSrc), 'app does not register a service worker');
+});
+
+check('saved arrays are loaded defensively', () => {
+  assert.ok(/function loadStoredArray\(/.test(htmlSrc), 'defensive storage loader is missing');
+  assert.ok(/Array\.isArray\(parsed\)/.test(htmlSrc), 'stored bookmark/history types are not validated');
+});
+
+check('settings actions are semantic buttons', () => {
+  for (const action of ['clearBookmarks()', 'clearHistory()', 'copyTelemetrySummary()', 'clearTelemetry()']) {
+    const escaped = action.replace(/[()]/g, '\\$&');
+    assert.ok(new RegExp('<button[^>]+onclick="' + escaped + '"').test(htmlSrc), `${action} is not exposed as a button`);
+  }
+});
+
+check('search synonyms use whole-term matching', () => {
+  assert.ok(/containsWholeTerm\(q, term\)/.test(htmlSrc), 'synonym keys still use substring matching');
+  assert.ok(/q\.length <= 3 \? containsWholeTerm\(title, q\)/.test(htmlSrc), 'short abbreviations still use title substrings');
 });
 
 // --- summary ----------------------------------------------------------

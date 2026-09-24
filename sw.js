@@ -6,7 +6,8 @@
  * page on any navigation while offline.
  */
 
-const CACHE_NAME = 'zstg-cache-v20-disclaimer-bottom';
+const CACHE_PREFIX = 'zstg-cache-';
+const CACHE_NAME = `${CACHE_PREFIX}v21-audit-remediation`;
 
 // Every asset the app actually requests over the network, so a first-time
 // install finishes 100% offline-ready — not just whatever happens to get
@@ -31,20 +32,13 @@ const PRECACHE_URLS = [
   'assets/moh-emblem.png'
 ];
 
-// Install: cache all critical assets. addAll() fails atomically if any single
-// URL 404s, which would silently leave the whole precache empty — so cache
-// each file individually and warn (not fail) on a miss instead.
+// Install atomically. If any critical file is unavailable, installation fails
+// and the last complete worker/cache remains active for reliable offline use.
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return Promise.all(
-        PRECACHE_URLS.map(url =>
-          cache.add(url).catch(err => console.warn('[SW] precache miss:', url, err))
-        )
-      );
-    }).then(() => {
-      return self.skipWaiting();
-    })
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(PRECACHE_URLS))
+      .then(() => self.skipWaiting())
   );
 });
 
@@ -53,7 +47,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
-        cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
+        cacheNames.filter(name => name.startsWith(CACHE_PREFIX) && name !== CACHE_NAME).map(name => caches.delete(name))
       );
     }).then(() => {
       return self.clients.claim();
@@ -89,16 +83,18 @@ self.addEventListener('fetch', event => {
   // pipeline has the app fetch data.json directly instead of using the
   // embedded script.)
   
-  // For everything else, use cache-first strategy — and never let a failed
-  // network fetch reject uncaught; fall back to whatever's cached (or a
-  // clean failure the app's own JS can handle) instead of a browser error.
+  // For everything else, use cache-first. Do not substitute index.html for a
+  // failed script/image request: returning HTML for those assets hides the
+  // real failure and can make the app fail with misleading syntax/MIME errors.
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       return cachedResponse || fetch(event.request).then(networkResponse => {
-        const responseClone = networkResponse.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone));
+        if (event.request.method === 'GET' && networkResponse.ok) {
+          const responseClone = networkResponse.clone();
+          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseClone)));
+        }
         return networkResponse;
-      }).catch(() => caches.match('index.html'));
+      });
     })
   );
 });
