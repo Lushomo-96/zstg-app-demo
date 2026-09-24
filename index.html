@@ -547,6 +547,21 @@ svg.icon { width: 1em; height: 1em; stroke: currentColor; fill: none; stroke-wid
 .drug-mention-link { color: var(--ink-soft); font-size: calc(12px * var(--tsize-mult)); font-weight: 650; margin-top: 8px; }
 .drug-conditions { margin-top: 12px; }
 
+/* === FORMULARY MONOGRAPHS === */
+.formulary-section h3 { border-bottom: 1px solid var(--line); color: var(--green); font-family: var(--serif); font-size: calc(19px * var(--tsize-mult)); margin: 0 0 9px; padding-bottom: 7px; }
+.formulary-value p { color: var(--ink); font-size: calc(15px * var(--tsize-mult)); line-height: 1.65; margin: 0 0 8px; white-space: pre-line; }
+.formulary-value ul { margin: 0; padding-left: 22px; }
+.formulary-value li { color: var(--ink); font-size: calc(15px * var(--tsize-mult)); line-height: 1.6; margin: 5px 0; }
+.formulary-facts { margin: 2px 0 8px; }
+.formulary-facts > div { border-bottom: 1px solid var(--line); display: grid; gap: 4px 12px; grid-template-columns: minmax(105px, .38fr) 1fr; padding: 8px 0; }
+.formulary-facts > div:last-child { border-bottom: 0; }
+.formulary-facts dt { color: var(--ink-soft); font-size: calc(12px * var(--tsize-mult)); font-weight: 750; }
+.formulary-facts dd { color: var(--ink); font-size: calc(14px * var(--tsize-mult)); margin: 0; min-width: 0; }
+.formulary-facts dd p { font-size: inherit; }
+@media (max-width: 520px) {
+  .formulary-facts > div { grid-template-columns: 1fr; gap: 3px; }
+}
+
 /* === BOOKMARKS === */
 .bookmark-empty { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
 .bookmark-empty .be-icon { font-size: calc(40px * var(--tsize-mult)); margin-bottom: 12px; color: var(--line-strong); display:flex; justify-content:center; }
@@ -616,7 +631,7 @@ html[data-text-size="lg"] .detail-section p, html[data-text-size="lg"] .detail-s
 @keyframes fabPulse { 0% { opacity: 0.55; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.35); } }
 @media (prefers-reduced-motion: reduce) { .emergency-fab .fab-ring { animation: none; display: none; } }
 
-/* === UTILITY FAB STACK (Back to Top / Share / Print) — shown only on detail pages === */
+/* === UTILITY FAB STACK (Back to Top / Share / Print) === */
 .utility-fabs {
   position: fixed; left: 16px; bottom: calc(58px + var(--safe-bottom) + 16px); z-index: 90;
   display: flex; flex-direction: column-reverse; gap: 10px;
@@ -632,6 +647,10 @@ html[data-text-size="lg"] .detail-section p, html[data-text-size="lg"] .detail-s
 .utility-fab svg { width: 18px; height: 18px; }
 .utility-fab.back-to-top { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s, visibility 0.2s, transform 0.15s; }
 .utility-fab.back-to-top.show-btt { opacity: 1; visibility: visible; pointer-events: auto; }
+.utility-fabs:not(.detail-tools) > .utility-fab:not(.back-to-top) { display: none; }
+.utility-fab.back-to-top {
+  position: fixed; right: 16px; bottom: calc(58px + var(--safe-bottom) + 16px); z-index: 91;
+}
 @media print {
   .app-header, .bottom-nav, .emergency-fab, .utility-fabs, .network-banner, .action-banner, #splash-screen, #toastHost { display: none !important; }
   .main-content { position: static !important; overflow: visible !important; }
@@ -700,6 +719,7 @@ footer p { font-size: calc(11.5px * var(--tsize-mult)); color: var(--ink-soft); 
 }
 .action-banner.visible { transform: translateY(0); opacity: 1; pointer-events: auto; }
 #updateBanner { top: calc(var(--header-height) + var(--safe-top) + 8px); background: var(--gold); color: #3D2B00; }
+#updateBanner.visible + .main-content { top: calc(var(--header-height) + var(--safe-top) + 80px); }
 .action-banner .ab-icon { flex-shrink: 0; display: flex; }
 .action-banner .ab-icon svg { width: 18px; height: 18px; }
 .action-banner .ab-text { flex: 1; line-height: 1.35; }
@@ -946,6 +966,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
 </style>
 </head>
 <body>
+<script src="assets/formulary-embed.js"></script>
 <script src="assets/data-embed.js"></script>
 
 <!-- SPLASH SCREEN (title-page style) -->
@@ -1002,7 +1023,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
         <p class="edition">Sixth Edition (2025) &middot; Clinical Reference Companion</p>
         <div class="home-assurance">
           <span class="home-assurance-status"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 20 6v5c0 5-3.4 8.2-8 10-4.6-1.8-8-5-8-10V6Z"/><polyline points="8.5 12 11 14.5 15.8 9.5"/></svg> Audited source · caveats marked</span>
-          <span class="home-assurance-meta"><span id="homeTopicCount">153</span> topics &middot; <span id="homeDrugCount">158</span> medicines &middot; Offline ready</span>
+          <span class="home-assurance-meta"><span id="homeTopicCount">153</span> topics &middot; <span id="homeDrugCount">158</span> monographs &middot; Offline ready</span>
         </div>
       </div>
       <div class="home-search-bar" onclick="showScreen('search')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showScreen('search');}" role="button" tabindex="0" aria-label="Open guideline search">
@@ -1015,7 +1036,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
           <span class="card-label">Emergency Protocols</span>
           <span class="card-count" id="emergencyCount">0</span>
         </button>
-        <button class="dash-card card-paeds" onclick="showDrugGuide()">
+        <button class="dash-card card-paeds" onclick="openFormulary()">
           <span class="card-icon"><svg class="icon" viewBox="0 0 24 24"><path d="m8.5 4.5 11 11a3.5 3.5 0 0 1-5 5l-11-11a3.5 3.5 0 0 1 5-5Z"/><line x1="9" y1="15" x2="15" y2="9"/></svg></span>
           <span class="card-label">Drug Guide</span>
           <span class="card-count" id="drugCount">0</span>
@@ -1070,6 +1091,28 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
     <div class="list-container" id="categoryList"></div>
   </div>
 
+  <!-- STG LIBRARY SCREEN -->
+  <div class="screen" id="screen-stg-library">
+    <div class="list-container" id="stgCategoriesList"></div>
+  </div>
+
+  <!-- NATIONAL FORMULARY SCREEN -->
+  <div class="screen" id="screen-formulary">
+    <div class="search-container">
+      <div class="search-input-wrap">
+        <span class="si"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></span>
+        <input type="text" id="formularySearchInput" placeholder="Search formulary medicines..." autocomplete="off" oninput="searchFormulary(this.value)">
+        <button class="clear-btn" id="formularySearchClearBtn" onclick="clearFormularySearch()" aria-label="Clear formulary search">&times;</button>
+      </div>
+      <div id="formularyList" class="search-results"></div>
+    </div>
+  </div>
+
+  <!-- FORMULARY DRUG DETAIL SCREEN -->
+  <div class="screen" id="screen-formulary-detail">
+    <div class="detail-container" id="formularyDetailContent"></div>
+  </div>
+
   <!-- EMERGENCIES SCREEN -->
   <div class="screen" id="screen-emergencies">
     <div class="list-container" id="emergencyList"></div>
@@ -1109,7 +1152,8 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
       <div class="settings-item"><span class="si-label">STG Edition</span><span class="si-value">Sixth Edition (2025)</span></div>
       <div class="settings-item"><span class="si-label">App Version</span><span class="si-value">2.0.0</span></div>
       <div class="settings-item" id="dataInfo"><span class="si-label">Data Coverage</span><span class="si-value">Loading...</span></div>
-      <div class="settings-item" id="sourceInfo"><span class="si-label">Source Assurance</span><span class="si-value">Loading...</span></div>
+      <div class="settings-item" id="sourceInfo"><span class="si-label">STG Source Assurance</span><span class="si-value">Loading...</span></div>
+      <div class="settings-item" id="formularySourceInfo"><span class="si-label">Formulary Import Audit</span><span class="si-value">Loading...</span></div>
       <div class="section-header" style="margin-top:16px;">Display</div>
       <div class="settings-item" style="cursor:default;flex-direction:column;align-items:stretch;gap:8px;">
         <span class="si-label">Appearance</span>
@@ -1140,7 +1184,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
       <div style="padding:14px 16px 4px;font-size:calc(13px * var(--tsize-mult));color:var(--ink-soft);line-height:1.7;">
         <p style="padding:10px 12px;border:1px solid var(--red);border-left:4px solid var(--red);border-radius:var(--radius-sm);background:var(--red-wash);color:var(--ink);"><strong style="color:var(--red);">Demo build &mdash; not a Ministry of Health publication.</strong> This app is a demonstration under development, yet to be presented to the Ministry of Health for review, approval and collaboration. It has not been endorsed or approved by the Ministry of Health, Republic of Zambia.</p>
         <p style="margin-top:12px;">The underlying guideline text is sourced from the official Zambia Standard Treatment Guidelines, Sixth Edition (2025), published by the Ministry of Health, Republic of Zambia. Reproducing that text here does not imply the Ministry's endorsement of this application.</p>
-        <p style="margin-top:8px;">All clinical content is sourced from the official STG document. The dataset passed source-fidelity audit, and known source caveats are marked on the affected topics.</p>
+        <p style="margin-top:8px;">Clinical content comes from the Zambia Standard Treatment Guidelines and the Zambia National Formulary, both Sixth Edition (2025). The imported source audits and their review flags are shown with the affected records.</p>
         <p style="margin-top:10px;font-weight:700;color:var(--ink);">This app is a clinical reference tool. Always verify critical dosing information against the official printed guideline.</p>
         <p style="margin-top:16px;">Guideline content &copy; 2025 Ministry of Health, Republic of Zambia</p>
         <p style="margin-top:16px;">Developed by: Mr. Lushomo Mwiinde, Medical Licentiate<br>Company: Perseverance<br>For: Ministry of Health Zambia</p>
@@ -1151,6 +1195,11 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
         <p>&copy; 2026 Perseverance | Developed by Mr. Lushomo Mwiinde, ML<br>In collaboration with Ministry of Health Zambia | ZSTG</p>
       </footer>
     </div>
+  </div>
+
+  <!-- BROWSE RESOURCE SCREEN -->
+  <div class="screen" id="screen-categories">
+    <div class="list-container" id="categoriesList"></div>
   </div>
 
 </div>
@@ -1164,8 +1213,8 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
   <svg class="icon" viewBox="0 0 24 24" style="stroke:var(--white);"><path d="M7 15V9a5 5 0 0 1 10 0v6"/><path d="M5 18h14M8 15h8"/><path d="M12 1v3M4.5 5.2l2.1 1.2M19.5 5.2l-2.1 1.2"/></svg>
 </button>
 
-<!-- UTILITY FABS: Back to Top / Share / Print (guideline & drug detail pages only) -->
-<div class="utility-fabs" id="utilityFabs">
+<!-- UTILITY FABS: Back to Top is available on every screen; Share / Print are detail-only. -->
+<div class="utility-fabs visible" id="utilityFabs">
   <button class="utility-fab back-to-top" id="backToTopFab" onclick="scrollDetailToTop()" aria-label="Back to top" title="Back to top">
     <svg class="icon" viewBox="0 0 24 24"><polyline points="6 12 12 6 18 12"/><line x1="12" y1="6" x2="12" y2="19"/></svg>
   </button>
@@ -1195,11 +1244,6 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
     <span class="nav-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3 v3 M12 18 v3 M3 12 h3 M18 12 h3 M5.6 5.6 l2.1 2.1 M16.3 16.3 l2.1 2.1 M18.4 5.6 l-2.1 2.1 M7.7 16.3 l-2.1 2.1"/></svg></span> Settings
   </button>
 </nav>
-
-<!-- CATEGORIES SCREEN (hidden from main, accessed via nav) -->
-<div class="screen" id="screen-categories">
-  <div class="list-container" id="categoriesList"></div>
-</div>
 
 <script>
 // === ICON LIBRARY (inline SVG, offline-safe) ===
@@ -1256,7 +1300,9 @@ let SEARCH_HISTORY = loadStoredArray('zstg_search_history');
 let currentScreen = 'home';
 let currentDetailId = null;
 let screenStack = [];
+let screenScrollStack = [];
 let DRUG_CATEGORY = 'All';
+let FORMULARY_SEARCH_INDEX = [];
 let TOPIC_NAV_SCROLL_HANDLER = null;
 let RENDER_ID_SEEN = new Set();
 let DATA_REF_INDEX = null;
@@ -1308,7 +1354,7 @@ function updateNetworkBanner() {
   const banner = document.getElementById('networkBanner');
   if (!banner) return;
   if (navigator.onLine === false) {
-    banner.textContent = "You're offline — all guideline content still works";
+    banner.textContent = "You're offline — all reference content still works";
     banner.classList.add('visible');
     setTimeout(() => banner.classList.remove('visible'), 3000);
   }
@@ -1318,6 +1364,7 @@ function updateNetworkBanner() {
 function init() {
   try {
     DATA = EMBEDDED_ZSTG_DATA;
+    FORMULARY_SEARCH_INDEX = EMBEDDED_FORMULARY_DATA.drugs.map(drug => ({ drug, text: formularySearchText(drug) }));
     buildDataReferenceIndex();
     initTextSize();
     initTheme();
@@ -1328,11 +1375,15 @@ function init() {
     
     // Update counts
     document.getElementById('dataInfo').querySelector('.si-value').textContent = 
-      DATA.meta.total_conditions + ' conditions, ' + DATA.meta.unique_drugs + ' drugs';
+      DATA.meta.total_conditions + ' STG topics · ' + EMBEDDED_FORMULARY_DATA.drugs.length + ' ZNF monographs';
     const sourceInfo = document.getElementById('sourceInfo');
     if (sourceInfo) sourceInfo.querySelector('.si-value').textContent =
       (DATA.meta.source_status === 'FINAL AUDITED' ? 'Final audited' : 'Review required') + ' · ' +
       DATA.meta.conditions_with_verification_issues + ' flagged topics';
+    const formularySourceInfo = document.getElementById('formularySourceInfo');
+    if (formularySourceInfo) formularySourceInfo.querySelector('.si-value').textContent =
+      EMBEDDED_FORMULARY_DATA.audit_summary.status + ' · ' +
+      EMBEDDED_FORMULARY_DATA.audit_summary.manual_review_records_preserved + ' records flagged for review';
     
     // Category counts
     for (const [key, section] of Object.entries(DATA.sections)) {
@@ -1347,11 +1398,11 @@ function init() {
         c.section === 'emergencies_and_poisons').length + ' protocols';
     
     // Drug count
-    document.getElementById('drugCount').textContent = DATA.meta.unique_drugs + ' medicines';
+    document.getElementById('drugCount').textContent = EMBEDDED_FORMULARY_DATA.drugs.length + ' monographs';
     const homeTopicCount = document.getElementById('homeTopicCount');
     const homeDrugCount = document.getElementById('homeDrugCount');
     if (homeTopicCount) homeTopicCount.textContent = DATA.meta.total_conditions;
-    if (homeDrugCount) homeDrugCount.textContent = DATA.meta.unique_drugs;
+    if (homeDrugCount) homeDrugCount.textContent = EMBEDDED_FORMULARY_DATA.drugs.length;
     
     // Bookmarks count
     updateBookmarkCount();
@@ -1378,7 +1429,7 @@ function init() {
 function showScreen(screenId, pushStack = true) {
   if (screenId !== 'detail') clearTopicNavigationTracking();
   if (pushStack && currentScreen !== screenId) {
-    screenStack.push(currentScreen);
+    pushCurrentScreenToStack();
   }
   
   // Hide all screens
@@ -1389,6 +1440,8 @@ function showScreen(screenId, pushStack = true) {
   if (target) {
     target.classList.add('active', pushStack ? 'enter-fwd' : 'enter-back');
   }
+  const scroller = document.getElementById('mainContent');
+  if (scroller && currentScreen !== screenId) scroller.scrollTop = 0;
   
   // Update header
   const backBtn = document.getElementById('backBtn');
@@ -1406,7 +1459,8 @@ function showScreen(screenId, pushStack = true) {
   const navMap = {
     home: 0,
     search: 1,
-    categories: 2, category: 2, emergencies: 2, drugs: 2, 'drug-detail': 2, detail: 2,
+    categories: 2, 'stg-library': 2, category: 2, emergencies: 2, drugs: 2, 'drug-detail': 2,
+    formulary: 2, 'formulary-detail': 2, detail: 2,
     bookmarks: 3,
     settings: 4
   };
@@ -1419,9 +1473,10 @@ function showScreen(screenId, pushStack = true) {
   
   // Update header title
   const titles = {
-    home: 'ZSTG', search: 'Search', categories: 'Browse', category: 'Category',
-    emergencies: 'Emergency Protocols', drugs: 'Drug Guide',
-    'drug-detail': 'Drug Information', detail: '', bookmarks: 'Bookmarks',
+    home: 'ZSTG', search: 'Search', categories: 'Browse', 'stg-library': 'Standard Treatment Guidelines', category: 'Category',
+    emergencies: 'Emergency Protocols', drugs: 'STG Medicine Index',
+    formulary: 'Formulary', 'formulary-detail': 'Drug Information',
+    'drug-detail': 'STG Medicine Information', detail: '', bookmarks: 'Bookmarks',
     settings: 'Settings'
   };
   document.getElementById('headerTitle').textContent = titles[screenId] || 'ZSTG';
@@ -1430,9 +1485,12 @@ function showScreen(screenId, pushStack = true) {
   const fab = document.getElementById('emergencyFab');
   if (fab) fab.classList.toggle('fab-hidden', screenId === 'emergencies' || screenId === 'home');
   
-  // Utility FABs (back-to-top / share / print): only relevant on a guideline or drug detail page
+  // Keep Back to Top available on every screen; Share and Print are detail-only.
   const utilFabs = document.getElementById('utilityFabs');
-  if (utilFabs) utilFabs.classList.toggle('visible', screenId === 'detail' || screenId === 'drug-detail');
+  if (utilFabs) {
+    utilFabs.classList.add('visible');
+    utilFabs.classList.toggle('detail-tools', screenId === 'detail' || screenId === 'drug-detail');
+  }
   const backToTop = document.getElementById('backToTopFab');
   if (backToTop) backToTop.classList.remove('show-btt');
   
@@ -1449,14 +1507,30 @@ function showScreen(screenId, pushStack = true) {
   trackEvent('screen', screenId);
 }
 
+function pushCurrentScreenToStack() {
+  screenStack.push(currentScreen);
+  const scroller = document.getElementById('mainContent');
+  screenScrollStack.push(scroller ? scroller.scrollTop : 0);
+}
+
 function goBack() {
   const prev = screenStack.pop();
-  if (prev) showScreen(prev, false);
+  if (!prev) return;
+  const previousScrollTop = screenScrollStack.pop() || 0;
+  showScreen(prev, false);
+  const scroller = document.getElementById('mainContent');
+  if (!scroller) return;
+  // Wait until the previous screen is visible and has completed layout before restoring.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    scroller.scrollTop = previousScrollTop;
+    updateBackToTopVisibility();
+  }));
 }
 
 function goHome() {
   if (currentScreen === 'home') return;
   screenStack = [];
+  screenScrollStack = [];
   showScreen('home', false);
 }
 
@@ -1492,7 +1566,46 @@ window.addEventListener('popstate', () => {
 // === CATEGORIES ===
 function renderCategories() {
   const container = document.getElementById('categoriesList');
-  container.innerHTML = '<div class="section-header">' + ic('book') + ' Browse by Category</div>';
+  const sectionCount = Object.keys(DATA.sections).length;
+  const monographCount = EMBEDDED_FORMULARY_DATA.drugs.length;
+  container.innerHTML = '<div class="section-header">' + ic('book') + ' Browse by resource</div>' + `
+    <div class="list-item" role="button" tabindex="0" onclick="openFormulary()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+      <span class="li-icon" style="background:var(--green-wash);color:var(--green);">${ic('pill')}</span>
+      <div class="li-text"><div class="li-title">Zambia National Formulary</div><div class="li-sub">Drug Guide · Sixth Edition (2025)</div></div>
+      <span class="li-count">${monographCount}</span><span class="li-chevron">›</span>
+    </div>
+    <div class="list-item" role="button" tabindex="0" onclick="openStgBrowse()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.click();}">
+      <span class="li-icon">${ic('book')}</span>
+      <div class="li-text"><div class="li-title">Standard Treatment Guidelines</div><div class="li-sub">Sixth Edition (2025) · browse clinical sections</div></div>
+      <span class="li-count">${sectionCount}</span><span class="li-chevron">›</span>
+    </div>`;
+}
+
+function openStgBrowse() {
+  renderStgCategories();
+  showScreen('stg-library');
+}
+
+function renderStgCategories() {
+  const container = document.getElementById('stgCategoriesList');
+  const medicineCount = DATA.meta.unique_drugs || DATA.drug_index.length;
+  container.innerHTML = '<div class="section-header">' + ic('book') + ' Standard Treatment Guidelines · Sixth Edition (2025)</div>';
+
+  const medicineIndex = document.createElement('div');
+  medicineIndex.className = 'list-item';
+  medicineIndex.setAttribute('role', 'button');
+  medicineIndex.setAttribute('tabindex', '0');
+  medicineIndex.onclick = showStgMedicineIndex;
+  medicineIndex.onkeydown = event => {
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); medicineIndex.click(); }
+  };
+  medicineIndex.innerHTML = `
+    <span class="li-icon" style="background:var(--green-wash);color:var(--green);">${ic('pill')}</span>
+    <div class="li-text"><div class="li-title">Medicines mentioned in STG</div><div class="li-sub">Guideline-linked medicine references</div></div>
+    <span class="li-count">${medicineCount}</span><span class="li-chevron">›</span>
+  `;
+  container.appendChild(medicineIndex);
+
   const sorted = Object.entries(DATA.sections).sort((a, b) => a[1].order - b[1].order);
   
   for (const [key, section] of sorted) {
@@ -1557,7 +1670,7 @@ function navigateToCategory(sectionKey) {
     }
   }
   
-  screenStack.push(currentScreen);
+  pushCurrentScreenToStack();
   showScreen('category', false);
   document.getElementById('headerTitle').textContent = section.name;
 }
@@ -1589,7 +1702,7 @@ function showEmergencyGuidelines() {
     container.appendChild(div);
   }
   
-  screenStack.push(currentScreen);
+  pushCurrentScreenToStack();
   showScreen('emergencies', false);
 }
 
@@ -1670,14 +1783,28 @@ function doSearch(query) {
     })
     .map(r => r.c)
     .slice(0, 30);
+  const allFormularyMatches = FORMULARY_SEARCH_INDEX
+    .filter(item => item.text.includes(q))
+    .map(item => {
+      const name = normalizeFormularySearchValue(item.drug.name);
+      const genericName = normalizeFormularySearchValue(item.drug.generic_name);
+      const score = name === q || genericName === q ? 4
+        : name.startsWith(q) || genericName.startsWith(q) ? 3
+        : name.includes(q) || genericName.includes(q) ? 2 : 1;
+      return { drug: item.drug, score };
+    })
+    .sort((a, b) => b.score - a.score || String(a.drug.name || '').localeCompare(String(b.drug.name || '')))
+    .map(item => item.drug);
+  const formularyResults = allFormularyMatches.slice(0, 12);
   
   const container = document.getElementById('searchResults');
-  if (results.length === 0) {
+  if (results.length === 0 && formularyResults.length === 0) {
     container.innerHTML = '<div class="empty-state"><div class="es-icon">' + ic('file', '32px') + '</div><div class="es-text">No results for &ldquo;' + escapeHtml(query) + '&rdquo;.<br>Try searching by disease, drug, or abbreviation &mdash; or check the Drug Guide.</div></div>';
     return;
   }
-  
-  container.innerHTML = '<div class="section-header">Results (' + results.length + ')</div>';
+
+  container.innerHTML = '';
+  if (results.length) container.insertAdjacentHTML('beforeend', '<div class="section-header">STG results (' + results.length + ')</div>');
   for (const item of results) {
     const sectionInfo = DATA.sections[item.section] || { icon: 'file', color: '#8A8574' };
     const div = document.createElement('div');
@@ -1695,6 +1822,40 @@ function doSearch(query) {
       <span class="r-chevron" style="color:var(--line-strong);">›</span>
     `;
     container.appendChild(div);
+  }
+  if (formularyResults.length) {
+    const resultCount = allFormularyMatches.length;
+    const countLabel = resultCount > formularyResults.length ? `${formularyResults.length} of ${resultCount}` : String(resultCount);
+    container.insertAdjacentHTML('beforeend', '<div class="section-header">Formulary results (' + countLabel + ')</div>');
+    for (const drug of formularyResults) {
+      const div = document.createElement('div');
+      div.className = 'search-result-item';
+      div.setAttribute('role', 'button');
+      div.setAttribute('tabindex', '0');
+      div.onclick = () => {
+        addSearchHistory(query);
+        showFormularyDetail(drug.drug_id);
+      };
+      div.onkeydown = event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); div.click(); }
+      };
+      const classification = drug.classification || {};
+      const detailLine = [drug.generic_name, classification.section, drug.source && `p. ${drug.source.page_start}`].filter(Boolean).join(' · ');
+      div.innerHTML = `
+        <span class="r-icon" style="background:var(--green-wash);color:var(--green);">${ic('pill')}</span>
+        <div class="r-text"><div class="r-title">${escapeHtml(drug.name)}</div><div class="r-sub">Formulary${detailLine ? ' · ' + escapeHtml(detailLine) : ''}</div></div>
+        <span class="r-chevron" style="color:var(--line-strong);">›</span>
+      `;
+      container.appendChild(div);
+    }
+    if (resultCount > formularyResults.length) {
+      const viewAll = document.createElement('button');
+      viewAll.type = 'button';
+      viewAll.className = 'search-result-item';
+      viewAll.innerHTML = '<span class="r-icon" style="background:var(--green-wash);color:var(--green);">' + ic('pill') + '</span><span class="r-text"><span class="r-title">View all ' + resultCount + ' Formulary matches</span></span><span class="r-chevron">›</span>';
+      viewAll.onclick = () => { addSearchHistory(query); openFormulary(query); };
+      container.appendChild(viewAll);
+    }
   }
 }
 
@@ -1754,12 +1915,175 @@ function renderRecentSearches() {
   }
 }
 
-// === DRUG GUIDE ===
-function showDrugGuide() {
+// === ZNF FORMULARY ===
+function openFormulary(query = '') {
+  const search = typeof query === 'string' ? query : '';
+  const input = document.getElementById('formularySearchInput');
+  if (input) input.value = search;
+  searchFormulary(search);
+  showScreen('formulary');
+}
+
+function normalizeFormularySearchValue(value) {
+  return String(value == null ? '' : value).toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function formularySearchText(drug) {
+  const fields = [
+    'name', 'generic_name', 'classification', 'presentation', 'indications',
+    'administration', 'side_effects', 'contraindications', 'cautions',
+    'interactions', 'pregnancy', 'breastfeeding', 'storage', 'additional_notes',
+    'cross_references'
+  ];
+  function flatten(value) {
+    if (value == null) return '';
+    if (Array.isArray(value)) return value.map(flatten).join(' ');
+    if (typeof value === 'object') return Object.values(value).map(flatten).join(' ');
+    return String(value);
+  }
+  return fields.map(field => flatten(drug[field])).join(' ').toLowerCase();
+}
+
+function renderFormularyList(query) {
+  const container = document.getElementById('formularyList');
+  const normalizedQuery = normalizeFormularySearchValue(query);
+  const allDrugs = EMBEDDED_FORMULARY_DATA.drugs || [];
+  const items = FORMULARY_SEARCH_INDEX
+    .filter(item => !normalizedQuery || item.text.includes(normalizedQuery))
+    .map(item => item.drug)
+    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')));
+
+  if (!items.length) {
+    container.innerHTML = '<div class="empty-state"><div class="es-icon">' + ic('pill', '32px') + '</div><div class="es-text">No formulary medicines found for that search.</div></div>';
+    return;
+  }
+
+  const reviewCount = EMBEDDED_FORMULARY_DATA.audit_summary && EMBEDDED_FORMULARY_DATA.audit_summary.manual_review_records_preserved || 0;
+  const auditStatus = EMBEDDED_FORMULARY_DATA.audit_summary && EMBEDDED_FORMULARY_DATA.audit_summary.status || 'not recorded';
+  const summary = normalizedQuery
+    ? `${items.length} of ${allDrugs.length} monographs match this search.`
+    : `${allDrugs.length} monographs · Zambia National Formulary, Sixth Edition (2025). R68 source audit: ${auditStatus}. ${reviewCount} records retain manual-review flags.`;
+  container.innerHTML = '<div class="drug-guide-summary">' + escapeHtml(summary) + '</div>';
+
+  let lastLetter = null;
+  for (const drug of items) {
+    const name = String(drug.name || 'Unnamed medicine');
+    const letter = name.trim().charAt(0).toUpperCase();
+    if (letter !== lastLetter) {
+      lastLetter = letter;
+      const divider = document.createElement('div');
+      divider.className = 'section-header';
+      divider.style.padding = '10px 16px 4px';
+      divider.textContent = letter;
+      container.appendChild(divider);
+    }
+
+    const classification = drug.classification || {};
+    const detailLine = [drug.generic_name, classification.subsection || classification.section, drug.source && `p. ${drug.source.page_start}`]
+      .filter(Boolean).join(' · ');
+    const row = document.createElement('div');
+    row.className = 'search-result-item';
+    row.setAttribute('role', 'button');
+    row.setAttribute('tabindex', '0');
+    row.onclick = () => showFormularyDetail(drug.drug_id);
+    row.onkeydown = event => {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); row.click(); }
+    };
+    row.innerHTML = `
+      <span class="r-icon" style="background:var(--green-wash);color:var(--green);">${ic('pill')}</span>
+      <div class="r-text"><div class="r-title">${escapeHtml(name)}</div><div class="r-sub">${escapeHtml(detailLine || 'Zambia National Formulary')}</div></div>
+      <span class="r-chevron" style="color:var(--line-strong);">›</span>
+    `;
+    container.appendChild(row);
+  }
+}
+
+function searchFormulary(query) {
+  const clearBtn = document.getElementById('formularySearchClearBtn');
+  if (clearBtn) clearBtn.classList.toggle('visible', !!query);
+  renderFormularyList(query);
+}
+
+function clearFormularySearch() {
+  const input = document.getElementById('formularySearchInput');
+  if (!input) return;
+  input.value = '';
+  input.focus();
+  searchFormulary('');
+}
+
+function formularyLabel(key) {
+  return String(key || '').replace(/_/g, ' ').replace(/\b\w/g, character => character.toUpperCase());
+}
+
+function renderFormularyValue(value) {
+  if (value == null || value === '') return '';
+  if (Array.isArray(value)) {
+    const entries = value.map(renderFormularyValue).filter(Boolean);
+    return entries.length ? '<ul>' + entries.map(entry => '<li>' + entry + '</li>').join('') + '</ul>' : '';
+  }
+  if (typeof value === 'object') {
+    const entries = Object.entries(value).map(([key, item]) => [key, renderFormularyValue(item)]).filter(([, rendered]) => rendered);
+    return entries.length ? '<dl class="formulary-facts">' + entries.map(([key, rendered]) =>
+      '<div><dt>' + escapeHtml(formularyLabel(key)) + '</dt><dd>' + rendered + '</dd></div>'
+    ).join('') + '</dl>' : '';
+  }
+  return '<p>' + escapeHtml(value) + '</p>';
+}
+
+function showFormularyDetail(drugId) {
+  const drug = EMBEDDED_FORMULARY_DATA.drugs.find(item => item.drug_id === drugId);
+  if (!drug) return;
+  const container = document.getElementById('formularyDetailContent');
+  const audit = drug.audit || {};
+  const source = drug.source || {};
+  const flags = [
+    ...(Array.isArray(audit.uncertainty_flags) ? audit.uncertainty_flags : []),
+    ...(Array.isArray(audit.ocr_flags) ? audit.ocr_flags : [])
+  ];
+  const needsReview = audit.requires_manual_review === true || flags.length > 0;
+  const pageRange = source.page_start != null && source.page_end != null && source.page_start !== source.page_end
+    ? `${source.page_start}–${source.page_end}`
+    : source.page_start != null ? source.page_start : source.page_end;
+  const sourceStatus = needsReview
+    ? 'Manual review flag retained'
+    : audit.source_verified === true ? 'Verified against source' : 'Verification status not recorded';
+  const genericName = drug.generic_name ? '<div class="detail-type">' + escapeHtml(drug.generic_name) + '</div>' : '';
+  let html = '<div class="detail-header"><div class="detail-code">Zambia National Formulary · Sixth Edition (2025)</div><div class="detail-title">' + ic('pill') + ' ' + escapeHtml(drug.name) + '</div>' + genericName + '</div>';
+  html += '<section class="source-assurance' + (needsReview ? ' needs-review' : '') + '"><div class="source-assurance-head"><span class="source-assurance-icon">' + ic(needsReview ? 'warning' : audit.source_verified === true ? 'check' : 'file') + '</span><div><div class="source-assurance-heading">Source record</div><div class="source-assurance-status">' + sourceStatus + '</div></div></div>';
+  html += '<p class="source-assurance-summary">' + escapeHtml(source.document || 'Zambia National Formulary') + ', Edition ' + escapeHtml(source.edition || '06') + ' (' + escapeHtml(source.year || 2025) + ')' + (pageRange ? ', page ' + escapeHtml(pageRange) : '') + '.</p>';
+  html += '<div class="source-assurance-facts"><span class="source-assurance-fact">' + escapeHtml(formularyLabel(audit.extraction_status || 'Audited source import')) + '</span>';
+  if (flags.length) html += '<span class="source-assurance-fact">' + flags.length + ' source flag' + (flags.length === 1 ? '' : 's') + '</span>';
+  html += '</div>';
+  if (needsReview) html += '<p class="source-assurance-note">This entry is marked for manual review in the supplied audit. ' + (flags.length ? 'The source wording and listed flags are preserved.' : 'The source wording is preserved as supplied.') + '</p>';
+  html += '</section>';
+
+  const fields = [
+    ['Classification', drug.classification], ['Presentation', drug.presentation], ['Indications', drug.indications],
+    ['Administration', drug.administration], ['Side effects', drug.side_effects], ['Contraindications', drug.contraindications],
+    ['Cautions', drug.cautions], ['Interactions', drug.interactions], ['Pregnancy', drug.pregnancy],
+    ['Breastfeeding', drug.breastfeeding], ['Storage', drug.storage], ['Additional notes', drug.additional_notes],
+    ['Cross references', drug.cross_references]
+  ];
+  for (const [label, value] of fields) {
+    const rendered = renderFormularyValue(value);
+    if (rendered) html += '<section class="detail-section formulary-section"><h3>' + escapeHtml(label) + '</h3><div class="sec-body formulary-value">' + rendered + '</div></section>';
+  }
+  if (flags.length) {
+    html += '<section class="detail-section formulary-section"><h3>Source review flags</h3><div class="sec-body formulary-value">' + renderFormularyValue(flags) + '</div></section>';
+  }
+  container.innerHTML = html;
+  pushCurrentScreenToStack();
+  showScreen('formulary-detail', false);
+  document.getElementById('headerTitle').textContent = drug.name;
+  trackEvent('drug', drug.name);
+}
+
+// === STG MEDICINE INDEX ===
+function showStgMedicineIndex() {
   renderDrugFilters();
   renderDrugList();
-  screenStack.push(currentScreen);
-  showScreen('drugs', false);
+  showScreen('drugs');
 }
 
 function renderDrugFilters() {
@@ -1860,7 +2184,7 @@ function showDrugDetail(drugName) {
   
   container.innerHTML = html;
   
-  screenStack.push(currentScreen);
+  pushCurrentScreenToStack();
   showScreen('drug-detail', false);
   document.getElementById('headerTitle').textContent = drugName;
   trackEvent('drug', drugName);
@@ -2282,7 +2606,7 @@ function showDetail(conditionId, navigate = true) {
   buildTopicNavigation(container);
   
   if (navigate) {
-    screenStack.push(currentScreen);
+    pushCurrentScreenToStack();
     showScreen('detail', false);
     document.getElementById('headerTitle').textContent = item.title;
     trackEvent('condition', item.title);
@@ -2879,7 +3203,7 @@ function showBookmarks(navigate = true) {
   }
   
   if (navigate) {
-    screenStack.push(currentScreen);
+    pushCurrentScreenToStack();
     showScreen('bookmarks', false);
   }
 }
@@ -3089,15 +3413,18 @@ function haptic(ms = 8) {
 }
 
 // === UTILITY FABS: Back to Top / Share / Print ===
+function updateBackToTopVisibility() {
+  const scroller = document.getElementById('mainContent');
+  const button = document.getElementById('backToTopFab');
+  if (!scroller || !button) return;
+  button.classList.toggle('show-btt', scroller.scrollTop > 350);
+}
+
 (function initScrollWatcher() {
   const scroller = document.getElementById('mainContent');
   if (!scroller) return;
-  scroller.addEventListener('scroll', () => {
-    const btn = document.getElementById('backToTopFab');
-    if (!btn) return;
-    btn.classList.toggle('show-btt', scroller.scrollTop > 400 &&
-      (currentScreen === 'detail' || currentScreen === 'drug-detail'));
-  }, { passive: true });
+  scroller.addEventListener('scroll', updateBackToTopVisibility, { passive: true });
+  updateBackToTopVisibility();
 })();
 
 function scrollDetailToTop() {

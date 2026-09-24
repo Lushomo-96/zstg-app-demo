@@ -7,17 +7,17 @@
  */
 
 const CACHE_PREFIX = 'zstg-cache-';
-const CACHE_NAME = `${CACHE_PREFIX}v21-audit-remediation`;
+const CACHE_NAME = `${CACHE_PREFIX}v25-formulary-audit`;
 
 // Every asset the app actually requests over the network, so a first-time
 // install finishes 100% offline-ready — not just whatever happens to get
 // requested (and reactively cached) during that first session.
 //
 // Note: assets/data.json is intentionally NOT listed here. The app loads its
-// content from assets/data-embed.js (a plain <script> include, which works
-// reliably in every install context including file:// and TWA wrappers).
-// data.json is the build pipeline's canonical output (seed.js writes it,
-// data-embed.js just wraps the same content for runtime use) and will start
+// STG and formulary content from embedded plain-script bundles, which work
+// reliably in every install context including file:// and TWA wrappers.
+// data.json is the build pipeline's canonical output (import-audited-source.js
+// writes it, data-embed.js just wraps the same content for runtime use) and will start
 // being fetched here once the Phase 2 remote-update pipeline lands — until
 // then, precaching it would duplicate the embedded audited dataset.
 const PRECACHE_URLS = [
@@ -25,6 +25,7 @@ const PRECACHE_URLS = [
   'index.html',
   'manifest.json',
   'assets/data-embed.js',
+  'assets/formulary-embed.js',
   'assets/icon-192.png',
   'assets/icon-512.png',
   'assets/icon-512-maskable.png',
