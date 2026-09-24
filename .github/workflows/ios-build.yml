@@ -1,0 +1,56 @@
+name: Build iOS package
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'ios/**'
+      - '.github/workflows/ios-build.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install CocoaPods when needed
+        run: |
+          if ! command -v pod >/dev/null 2>&1; then
+            sudo gem install cocoapods --no-document
+          fi
+
+      - name: Install iOS dependencies
+        working-directory: ios
+        run: pod install
+
+      - name: Build unsigned iOS app
+        run: |
+          xcodebuild \
+            -workspace ios/ZSTG.xcworkspace \
+            -scheme ZSTG \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath "$RUNNER_TEMP/ZSTG-DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package unsigned IPA
+        run: |
+          APP_PATH="$RUNNER_TEMP/ZSTG-DerivedData/Build/Products/Release-iphoneos/ZSTG.app"
+          test -d "$APP_PATH"
+          mkdir -p "$RUNNER_TEMP/ios-package/Payload"
+          ditto "$APP_PATH" "$RUNNER_TEMP/ios-package/Payload/ZSTG.app"
+          (cd "$RUNNER_TEMP/ios-package" && /usr/bin/zip -qry "$GITHUB_WORKSPACE/ZSTG-unsigned.ipa" Payload)
+
+      - name: Save build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZSTG-unsigned-iOS-package
+          path: ZSTG-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
