@@ -1172,6 +1172,7 @@ body { background-image: linear-gradient(135deg, color-mix(in srgb, var(--green)
       </div>
       <div class="section-header" style="margin-top:16px;">Actions</div>
       <button type="button" class="settings-item" id="installSettingsRow" onclick="triggerInstall()" style="display:none;"><span class="si-label">Install App</span><span class="si-value">Tap to install</span></button>
+      <button type="button" class="settings-item" id="checkUpdateRow" onclick="checkForUpdates()"><span class="si-label">Check for Updates</span><span class="si-value" aria-live="polite">Tap to reload latest version</span></button>
       <button type="button" class="settings-item" onclick="clearBookmarks()"><span class="si-label">Clear Bookmarks</span><span class="si-value">Tap to clear</span></button>
       <button type="button" class="settings-item" onclick="clearHistory()"><span class="si-label">Clear Search History</span><span class="si-value">Tap to clear</span></button>
       <div class="section-header" style="margin-top:16px;">Usage Data (this device only)</div>
@@ -3262,6 +3263,42 @@ function applyUpdate() {
 }
 function dismissUpdateBanner() {
   document.getElementById('updateBanner').classList.remove('visible');
+}
+
+async function checkForUpdates() {
+  const row = document.getElementById('checkUpdateRow');
+  const status = row.querySelector('.si-value');
+  row.disabled = true;
+  status.textContent = 'Checking...';
+  try {
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (registration) {
+        const previousController = navigator.serviceWorker.controller;
+        await registration.update();
+        if ((registration.installing || registration.waiting) &&
+            navigator.serviceWorker.controller === previousController) {
+          await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+              navigator.serviceWorker.removeEventListener('controllerchange', updated);
+              reject(new Error('Update is still installing'));
+            }, 20000);
+            function updated() {
+              clearTimeout(timeout);
+              navigator.serviceWorker.removeEventListener('controllerchange', updated);
+              resolve();
+            }
+            navigator.serviceWorker.addEventListener('controllerchange', updated, { once: true });
+            if (navigator.serviceWorker.controller !== previousController) updated();
+          });
+        }
+      }
+    }
+    window.location.reload();
+  } catch (error) {
+    status.textContent = 'Could not update. Try again online.';
+    row.disabled = false;
+  }
 }
 
 // === INSTALL APP PROMPT ===

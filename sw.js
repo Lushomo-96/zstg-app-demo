@@ -7,7 +7,7 @@
  */
 
 const CACHE_PREFIX = 'zstg-cache-';
-const CACHE_NAME = `${CACHE_PREFIX}v25-formulary-audit`;
+const CACHE_NAME = `${CACHE_PREFIX}v26-manual-update`;
 
 // Every asset the app actually requests over the network, so a first-time
 // install finishes 100% offline-ready — not just whatever happens to get
